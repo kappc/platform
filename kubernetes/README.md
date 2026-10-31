@@ -91,7 +91,7 @@ Add one manifest under `clusters/<cluster>/argocd/projects/` for every AppProjec
 
 ## Accessing Whoami
 
-Traefik is exposed as a NodePort on port `30080` for HTTP and `30443` for HTTPS. The whoami Ingress host is `whoami.homelab.test`; map that name to a Kubernetes node address on the client (for example, in `/etc/hosts`) and browse to `http://whoami.homelab.test:30080`.
+Traefik is exposed as a NodePort on port `30080` for HTTP and `30443` for HTTPS. Its Kubernetes Ingress provider publishes the Minikube node IP in Ingress status so Argo CD can report Ingress health and complete RollingSync; update `providers.kubernetesIngress.ingressEndpoint.ip` in the Traefik instance values if the Minikube IP changes. The whoami Ingress host is `whoami.homelab.test`; map that name to the same node address on the client (for example, in `/etc/hosts`) and browse to `http://whoami.homelab.test:30080`.
 
 The HTTPS NodePort is reserved for later TLS configuration; this initial whoami route is HTTP-only. If the cluster provides a load balancer, adjust the Traefik service override in `clusters/homelab/instances/traefik/values.yaml`.
 

@@ -1,10 +1,14 @@
 ---
 traefik:
-  service:
-    spec:
-      type: NodePort
   ports:
     web:
       nodePort: 30080
     websecure:
       nodePort: 30443
+  providers:
+    kubernetesIngress:
+      ingressEndpoint:
+        ip: 192.168.49.2
+  service:
+    spec:
+      type: NodePort
