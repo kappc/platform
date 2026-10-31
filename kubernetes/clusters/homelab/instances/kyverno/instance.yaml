@@ -1,6 +1,7 @@
 ---
-app: kyverno
-instance: kyverno
+application: kyverno
+argocd:
+  name: kyverno
+  project: platform
+  rolloutGroup: infrastructure
 namespace: kyverno
-project: platform
-rolloutGroup: infrastructure

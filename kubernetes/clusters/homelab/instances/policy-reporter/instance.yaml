@@ -1,6 +1,7 @@
 ---
-app: policy-reporter
-instance: policy-reporter
+application: policy-reporter
+argocd:
+  name: policy-reporter
+  project: platform
+  rolloutGroup: platform
 namespace: policy-reporter
-project: platform
-rolloutGroup: platform

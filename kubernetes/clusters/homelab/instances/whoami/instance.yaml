@@ -1,6 +1,7 @@
 ---
-app: whoami
-instance: whoami
+application: whoami
+argocd:
+  name: whoami
+  project: platform
+  rolloutGroup: workload
 namespace: whoami
-project: platform
-rolloutGroup: workload

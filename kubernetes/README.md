@@ -78,19 +78,29 @@ clusters/homelab/instances/whoami/
 └── values.yaml
 ```
 
-The `instance.yaml` descriptor separates deployment identity, destination, policy, and rollout group:
+The `instance.yaml` descriptor selects a catalog application, destination namespace, and Argo CD deployment settings:
 
 | Field | Meaning | Example |
 | --- | --- | --- |
-| `app` | Reusable chart definition under `applications/` | `whoami` |
-| `instance` | Unique Argo CD Application and Helm release name | `whoami` or `whoami-internal` |
+| `application` | Catalog entry under `applications/` | `whoami` |
+| `argocd.name` | Unique Argo CD Application and Helm release name | `whoami` or `whoami-internal` |
+| `argocd.project` | Argo CD AppProject that constrains source, destination, and resource permissions | `platform` |
+| `argocd.rolloutGroup` | RollingSync group for ordered deployment | `workload` |
 | `namespace` | Kubernetes namespace where that release deploys | `whoami` |
-| `project` | Argo CD AppProject that constrains source, destination, and resource permissions | `platform` |
-| `rolloutGroup` | RollingSync group for ordered deployment | `workload` |
 
-For example, two `whoami` instances can use the same `app` while having distinct `instance`, `namespace`, and values files. The current rollout groups are `infrastructure`, `platform`, and `workload`; Argo CD, Envoy Gateway, and the Kyverno controller are in `infrastructure`, Kyverno policies and Policy Reporter are in `platform`, and whoami is in `workload`. Cluster overrides use the conventional `values.yaml` filename beside the descriptor and are optional; if absent, only the chart's manifest-defined settings are used. Keep values files limited to settings that vary by instance or cluster; fixed workload details belong in the chart templates. The Envoy Gateway chart defaults its data-plane Service to `LoadBalancer`; the homelab instance overrides it to `NodePort` port `30080`. The chart's Gateway defaults to name `gateway`, GatewayClass `envoy-gateway`, and listener `http` on port 80. The whoami chart exposes image repository, tag and digest, `deployment.replicas`, resource requests/limits, and HTTPRoute settings (enabled state, parent Gateway references, hostname, and path). Its security context, probes, and container/service ports are fixed in the manifests. The app listens on the whoami image's default container port, 80. An AppProject is an Argo CD policy boundary, not a Kubernetes namespace; different projects can target the same namespace only when their destination rules permit it. Removing an instance descriptor removes its generated Application; its resource finalizer can delete the release's resources, so protect and back up persistent data before removal.
+```yaml
+---
+application: whoami
+argocd:
+  name: whoami
+  project: platform
+  rolloutGroup: workload
+namespace: whoami
+```
 
-Add one manifest under `clusters/<cluster>/argocd/projects/` for every AppProject; the root Application recursively discovers these manifests. The generic ApplicationSet reads `project` and `rolloutGroup` from each inventory descriptor, so different tools can use different projects without separate ApplicationSets. The `platform` project allows namespaced applications in any namespace of the local cluster; keep its source repositories and cluster-scoped resource allowlist narrow. The included `argocd` project is reserved for the Argo CD control plane; `platform` is for platform services and workloads, including the Gateway API and Envoy Gateway CRDs and Kyverno ClusterPolicies. RollingSync applies `infrastructure`, then `platform`, then `workload`.
+For example, two `whoami` instances can use the same `application` while having distinct `argocd.name`, `namespace`, and values files. The current rollout groups are `infrastructure`, `platform`, and `workload`; Argo CD, Envoy Gateway, and the Kyverno controller are in `infrastructure`, Kyverno policies and Policy Reporter are in `platform`, and whoami is in `workload`. Cluster overrides use the conventional `values.yaml` filename beside the descriptor and are optional; if absent, only the chart's manifest-defined settings are used. Keep values files limited to settings that vary by instance or cluster; fixed workload details belong in the chart templates. The Envoy Gateway chart defaults its data-plane Service to `LoadBalancer`; the homelab instance overrides it to `NodePort` port `30080`. The chart's Gateway defaults to name `gateway`, GatewayClass `envoy-gateway`, and listener `http` on port 80. The whoami chart exposes image repository, tag and digest, `deployment.replicas`, resource requests/limits, and HTTPRoute settings (enabled state, parent Gateway references, hostname, and path). Its security context, probes, and container/service ports are fixed in the manifests. The app listens on the whoami image's default container port, 80. An AppProject is an Argo CD policy boundary, not a Kubernetes namespace; different projects can target the same namespace only when their destination rules permit it. Removing an instance descriptor removes its generated Application; its resource finalizer can delete the release's resources, so protect and back up persistent data before removal.
+
+Add one manifest under `clusters/<cluster>/argocd/projects/` for every AppProject; the root Application recursively discovers these manifests. The generic ApplicationSet reads `argocd.project` and `argocd.rolloutGroup` from each inventory descriptor, so different tools can use different projects without separate ApplicationSets. The `platform` project allows namespaced applications in any namespace of the local cluster; keep its source repositories and cluster-scoped resource allowlist narrow. The included `argocd` project is reserved for the Argo CD control plane; `platform` is for platform services and workloads, including the Gateway API and Envoy Gateway CRDs and Kyverno ClusterPolicies. RollingSync applies `infrastructure`, then `platform`, then `workload`.
 
 Kyverno is pinned to chart `3.9.2` (app version `1.19.2`). The separate policy chart installs audit-only ClusterPolicies that report containers missing CPU/memory requests or CPU/memory limits and image references that use the mutable `:latest` tag or omit a tag (which implicitly uses `latest`). Digest-pinned references are allowed. Both policies cover regular, init, and ephemeral containers and do not block admissions. Policy Reporter collects these results and provides a UI with the Kyverno plugin. Configure each policy's `failureAction` and optional `excludedNamespaces` independently in `applications/kyverno-policies/values.yaml`; for example, set `policies.disallowLatestTag.failureAction` to `Enforce`. Review reports before enforcing policies, and keep namespace exclusions narrow and intentional.
 

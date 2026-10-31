@@ -1,6 +1,7 @@
 ---
-app: argocd
-instance: argocd
+application: argocd
+argocd:
+  name: argocd
+  project: argocd
+  rolloutGroup: infrastructure
 namespace: argocd
-project: argocd
-rolloutGroup: infrastructure

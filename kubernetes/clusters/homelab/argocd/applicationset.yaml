@@ -35,22 +35,22 @@ spec:
                 - workload
   template:
     metadata:
-      name: '{{ .instance }}'
+      name: '{{ .argocd.name }}'
       labels:
-        rollout-group: '{{ .rolloutGroup }}'
+        rollout-group: '{{ .argocd.rolloutGroup }}'
       finalizers:
         - resources-finalizer.argocd.argoproj.io
     spec:
-      project: '{{ .project }}'
+      project: '{{ .argocd.project }}'
       sources:
         - repoURL: https://github.com/kappc/platform.git
           targetRevision: main
-          path: kubernetes/applications/{{ .app }}
+          path: kubernetes/applications/{{ .application }}
           helm:
-            releaseName: '{{ .instance }}'
+            releaseName: '{{ .argocd.name }}'
             valueFiles:
-              - $values/kubernetes/applications/{{ .app }}/values.yaml
-              - $values/kubernetes/clusters/homelab/instances/{{ .instance }}/values.yaml
+              - $values/kubernetes/applications/{{ .application }}/values.yaml
+              - $values/kubernetes/clusters/homelab/instances/{{ .argocd.name }}/values.yaml
             ignoreMissingValueFiles: true
         - repoURL: https://github.com/kappc/platform.git
           targetRevision: main
