@@ -1,0 +1,6 @@
+---
+app: envoy-gateway
+instance: envoy-gateway
+namespace: envoy-gateway-system
+project: platform
+rolloutGroup: platform

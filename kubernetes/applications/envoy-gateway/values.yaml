@@ -1,0 +1,33 @@
+---
+gateway-helm:
+  crds:
+    enabled: true
+  deployment:
+    replicas: 1
+    envoyGateway:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          cpu: 500m
+          memory: 512Mi
+
+gatewayClass:
+  name: envoy-gateway
+
+gateway:
+  name: gateway
+  listener:
+    name: http
+    port: 80
+    allowedRoutes:
+      namespaces:
+        from: All
+
+envoyProxy:
+  name: envoy-proxy
+  service:
+    type: LoadBalancer
+    externalTrafficPolicy: Cluster
+    port: 80

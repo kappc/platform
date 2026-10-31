@@ -1,0 +1,14 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: {{ .Values.gateway.name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  gatewayClassName: {{ .Values.gatewayClass.name }}
+  listeners:
+    - name: {{ .Values.gateway.listener.name }}
+      protocol: HTTP
+      port: {{ .Values.gateway.listener.port }}
+      allowedRoutes:
+        {{- toYaml .Values.gateway.listener.allowedRoutes | nindent 8 }}

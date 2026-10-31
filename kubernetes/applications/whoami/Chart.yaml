@@ -1,7 +1,7 @@
 ---
 apiVersion: v2
 name: whoami
-description: Minimal HTTP application for validating the homelab ingress
+description: Minimal HTTP application for validating the homelab Gateway API
 type: application
 version: 0.1.0
 appVersion: v1.12.0

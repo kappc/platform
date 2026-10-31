@@ -1,6 +1,0 @@
----
-app: traefik
-instance: traefik
-namespace: traefik
-project: platform
-rolloutGroup: platform

@@ -52,7 +52,7 @@ kubectl -n argocd get secret argocd-initial-admin-secret \
 
 Sign in as `admin` at `https://localhost:8080`. The port-forward stops when you close the command or terminal. Change the initial password after the first login, then remove the `argocd-initial-admin-secret` Secret.
 
-The bootstrap Helm install creates Argo CD; the root Application then manages the local AppProjects and ApplicationSet. The generated `argocd` Application uses the same wrapper chart, values, and release name. To upgrade Argo CD, update the `argo-cd` chart dependency version in `applications/argocd/Chart.yaml`, refresh and commit `applications/argocd/Chart.lock`, and merge the change. The generated Application then reconciles that chart version through RollingSync. For a new cluster, bootstrap from the version and values recorded in the repository.
+The bootstrap Helm install creates Argo CD; the root Application recursively loads the AppProjects and the ApplicationSet directly from the `argocd/` directory. AppProjects sync in wave `-4`, and the ApplicationSet in wave `-2`. The Envoy Gateway chart installs its Gateway API and Envoy Gateway CRDs as part of the generated `envoy-gateway` Application; Argo CD syncs CRDs before dependent custom resources in that application. The same chart also configures the controller and Gateway. Note that Helm does not upgrade CRDs stored in a chart's `crds/` directory during a chart version upgrade; follow Envoy Gateway's documented CRD upgrade procedure before upgrading the controller. The generated `argocd` Application uses the same wrapper chart, values, and release name. To upgrade Argo CD, update the `argo-cd` chart dependency version in `applications/argocd/Chart.yaml`, refresh and commit `applications/argocd/Chart.lock`, and merge the change. The generated Application then reconciles that chart version through RollingSync. For a new cluster, bootstrap from the version and values recorded in the repository.
 
 After applying the root Application, let Argo CD own subsequent changes; do not run `helm upgrade` manually against the same release.
 
@@ -60,7 +60,7 @@ To update OCI dependencies and refresh lock files:
 
 ```sh
 helm dependency update kubernetes/applications/argocd
-helm dependency update kubernetes/applications/traefik
+helm dependency update kubernetes/applications/envoy-gateway
 ```
 
 Helm pulls charts from the registries into a local cache or `charts/` directory as needed. Archives are ignored by Git and are not part of the application definitions.
@@ -85,15 +85,17 @@ The `instance.yaml` descriptor separates deployment identity, destination, polic
 | `project` | Argo CD AppProject that constrains source, destination, and resource permissions | `platform` |
 | `rolloutGroup` | RollingSync group for ordered deployment | `workload` |
 
-For example, two `whoami` instances can use the same `app` while having distinct `instance`, `namespace`, and values files. The current groups are `platform` and `workload`; Argo CD and Traefik are in `platform`, while whoami is in `workload`. Cluster overrides use the conventional `values.yaml` filename beside the descriptor and are optional; if absent, only the chart's manifest-defined settings are used. Keep values files limited to settings that vary by instance or cluster; fixed workload details belong in the chart templates. The whoami chart exposes image repository, tag and digest, `deployment.replicas`, resource requests/limits, and ingress settings (enabled state, class, hostname, path, and path type). Its security context, probes, and container/service ports are fixed in the manifests. The app listens on the whoami image's default container port, 80. An AppProject is an Argo CD policy boundary, not a Kubernetes namespace; different projects can target the same namespace only when their destination rules permit it. Removing an instance descriptor removes its generated Application; its resource finalizer can delete the release's resources, so protect and back up persistent data before removal.
+For example, two `whoami` instances can use the same `app` while having distinct `instance`, `namespace`, and values files. The current groups are `platform` and `workload`; Argo CD and Envoy Gateway are in `platform`, while whoami is in `workload`. Cluster overrides use the conventional `values.yaml` filename beside the descriptor and are optional; if absent, only the chart's manifest-defined settings are used. Keep values files limited to settings that vary by instance or cluster; fixed workload details belong in the chart templates. The Envoy Gateway chart defaults its data-plane Service to `LoadBalancer`; the homelab instance overrides it to `NodePort` port `30080`. The chart's Gateway defaults to name `gateway`, GatewayClass `envoy-gateway`, and listener `http` on port 80. The whoami chart exposes image repository, tag and digest, `deployment.replicas`, resource requests/limits, and HTTPRoute settings (enabled state, parent Gateway references, hostname, and path). Its security context, probes, and container/service ports are fixed in the manifests. The app listens on the whoami image's default container port, 80. An AppProject is an Argo CD policy boundary, not a Kubernetes namespace; different projects can target the same namespace only when their destination rules permit it. Removing an instance descriptor removes its generated Application; its resource finalizer can delete the release's resources, so protect and back up persistent data before removal.
 
-Add one manifest under `clusters/<cluster>/argocd/projects/` for every AppProject. The root Application recursively loads these project manifests. The generic ApplicationSet reads `project` and `rolloutGroup` from each inventory descriptor, so different tools can use different projects without separate ApplicationSets. The `platform` project allows namespaced applications in any namespace of the local cluster; keep its source repositories and cluster-scoped resource allowlist narrow. The included `argocd` project is reserved for the Argo CD control plane; `platform` is for platform services and workloads. RollingSync currently places Argo CD and Traefik in the `platform` rollout group, followed by whoami in `workload`.
+Add one manifest under `clusters/<cluster>/argocd/projects/` for every AppProject; the root Application recursively discovers these manifests. The generic ApplicationSet reads `project` and `rolloutGroup` from each inventory descriptor, so different tools can use different projects without separate ApplicationSets. The `platform` project allows namespaced applications in any namespace of the local cluster; keep its source repositories and cluster-scoped resource allowlist narrow. The included `argocd` project is reserved for the Argo CD control plane; `platform` is for platform services and workloads, including the Gateway API and Envoy Gateway CRDs. RollingSync currently places Argo CD and Envoy Gateway in the `platform` rollout group, followed by whoami in `workload`.
 
 ## Accessing Whoami
 
-Traefik is exposed as a NodePort on port `30080` for HTTP and `30443` for HTTPS. Its Kubernetes Ingress provider publishes the Minikube node IP in Ingress status so Argo CD can report Ingress health and complete RollingSync. The Traefik instance disables `publishedService` because its NodePort Service has no load-balancer address to publish; update `providers.kubernetesIngress.ingressEndpoint.ip` in the instance values if the Minikube IP changes. The whoami Ingress host is `whoami.homelab.test`; map that name to the same node address on the client (for example, in `/etc/hosts`) and browse to `http://whoami.homelab.test:30080`.
+The Envoy Gateway chart creates a Gateway named `gateway` in `envoy-gateway-system`, using GatewayClass `envoy-gateway`. Its `http` listener accepts HTTPRoutes from any namespace on port 80. The homelab instance exposes the generated Envoy proxy Service as a NodePort on port `30080`. However, the current whoami chart values reference Gateway `envoy-gateway` and listener `web`; those references do not match the Gateway name and listener in the Envoy Gateway chart, so the HTTPRoute will not attach as configured. Align the `httpRoute.parentRefs` values with Gateway `gateway` and listener `http` before expecting requests to work. Once aligned, map `whoami.homelab.test` to the Minikube node address on the client (for example, in `/etc/hosts`) and browse to `http://whoami.homelab.test:30080`.
 
-The HTTPS NodePort is reserved for later TLS configuration; this initial whoami route is HTTP-only. If the cluster provides a load balancer, adjust the Traefik service override in `clusters/homelab/instances/traefik/values.yaml`.
+This initial Gateway is HTTP-only. If the cluster later provides a load balancer, change the Envoy proxy Service configuration in `applications/envoy-gateway/templates/envoyproxy.yaml`.
+
+Envoy Gateway supports route-scoped external authorization and OIDC through its `SecurityPolicy` CRD. This repository does not deploy an authentication backend or policy yet.
 
 ## Validation
 
@@ -101,11 +103,11 @@ Build dependencies before linting the umbrella charts, then lint and render each
 
 ```sh
 helm dependency build kubernetes/applications/argocd
-helm dependency build kubernetes/applications/traefik
+helm dependency build kubernetes/applications/envoy-gateway
 helm lint kubernetes/applications/argocd
-helm lint kubernetes/applications/traefik
+helm lint kubernetes/applications/envoy-gateway
 helm lint kubernetes/applications/whoami \
-  --set ingress.host=whoami.validation.invalid
+  --set httpRoute.hostname=whoami.validation.invalid
 helm template whoami kubernetes/applications/whoami \
   --namespace whoami \
   -f kubernetes/applications/whoami/values.yaml \

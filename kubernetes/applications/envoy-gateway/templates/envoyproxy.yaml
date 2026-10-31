@@ -1,0 +1,22 @@
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyProxy
+metadata:
+  name: {{ .Values.envoyProxy.name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  provider:
+    type: Kubernetes
+    kubernetes:
+      envoyService:
+        type: {{ .Values.envoyProxy.service.type }}
+        externalTrafficPolicy: {{ .Values.envoyProxy.service.externalTrafficPolicy }}
+        {{- if .Values.envoyProxy.service.nodePort }}
+        patch:
+          type: StrategicMerge
+          value:
+            spec:
+              ports:
+                - port: {{ .Values.envoyProxy.service.port }}
+                  nodePort: {{ .Values.envoyProxy.service.nodePort }}
+        {{- end }}
