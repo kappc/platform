@@ -2,7 +2,7 @@
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: require-pod-requests-limits
+  name: require-pod-resources
   annotations:
     policies.kyverno.io/title: Require Pod Resource Requests and Limits
     policies.kyverno.io/category: Best Practices
@@ -10,7 +10,9 @@ metadata:
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: Require CPU and memory requests and limits so workloads can be scheduled and resource use bounded.
 spec:
+  admission: true
   background: true
+  emitWarning: false
   rules:
     - name: validate-container-resources
       match:
@@ -26,6 +28,7 @@ spec:
                 {{- toYaml . | nindent 16 }}
       {{- end }}
       validate:
+        allowExistingViolations: true
         failureAction: {{ .Values.policies.requirePodRequestsLimits.failureAction }}
         message: Containers must define CPU and memory requests and limits.
         pattern:
@@ -54,3 +57,5 @@ spec:
                   limits:
                     cpu: "?*"
                     memory: "?*"
+      skipBackgroundRequests: true
+  validationFailureAction: {{ .Values.policies.requirePodRequestsLimits.failureAction }}
