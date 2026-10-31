@@ -20,7 +20,7 @@ kubectl config use-context minikube
 kubectl cluster-info
 ```
 
-Install Cilium before Argo CD. Its agent and operator use host networking so they can start before the cluster has a pod network. The homelab values select native routing because the Docker-backed Minikube node does not support Cilium's default VXLAN tunnel datapath. They also enable eBPF masquerading and kube-proxy replacement; Cilium discovers the API endpoint from the `cluster-info` ConfigMap. Do not apply this bootstrap procedure to a cluster with workloads until you have planned and validated the CNI migration.
+Install Cilium before Argo CD. Its agent and operator use host networking so they can start before the cluster has a pod network. The homelab values select native routing because the Docker-backed Minikube node does not support Cilium's default VXLAN tunnel datapath. They also enable eBPF masquerading and kube-proxy replacement, with the Minikube API endpoint configured explicitly. If Minikube reports a different API endpoint, update `k8sServiceHost` and `k8sServicePort` in the Cilium instance values before installing. Do not apply this bootstrap procedure to a cluster with workloads until you have planned and validated the CNI migration.
 
 ```sh
 helm dependency build kubernetes/catalog/cilium

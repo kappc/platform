@@ -7,7 +7,8 @@ cilium:
       clusterPoolIPv4PodCIDRList:
         - 10.0.0.0/16
   ipv4NativeRoutingCIDR: 10.0.0.0/16
-  k8sServiceHost: auto
+  k8sServiceHost: control-plane.minikube.internal
+  k8sServicePort: 8443
   kubeProxyReplacement: true
   operator:
     replicas: 1
