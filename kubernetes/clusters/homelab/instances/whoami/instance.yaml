@@ -1,0 +1,6 @@
+---
+app: whoami
+instance: whoami
+namespace: whoami
+project: platform
+rolloutGroup: workload

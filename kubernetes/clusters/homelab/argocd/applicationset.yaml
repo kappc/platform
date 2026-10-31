@@ -1,0 +1,59 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: applications
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions:
+    - missingkey=error
+  generators:
+    - git:
+        repoURL: https://github.com/kappc/platform.git
+        revision: main
+        files:
+          - path: kubernetes/clusters/homelab/instances/*/instance.yaml
+  strategy:
+    type: RollingSync
+    rollingSync:
+      steps:
+        - matchExpressions:
+            - key: rollout-group
+              operator: In
+              values:
+                - platform
+        - matchExpressions:
+            - key: rollout-group
+              operator: In
+              values:
+                - workload
+  template:
+    metadata:
+      name: '{{ .instance }}'
+      labels:
+        rollout-group: '{{ .rolloutGroup }}'
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+    spec:
+      project: '{{ .project }}'
+      sources:
+        - repoURL: https://github.com/kappc/platform.git
+          targetRevision: main
+          path: kubernetes/applications/{{ .app }}
+          helm:
+            releaseName: '{{ .instance }}'
+            valueFiles:
+              - $values/kubernetes/applications/{{ .app }}/values.yaml
+              - $values/kubernetes/clusters/homelab/instances/{{ .instance }}/values.yaml
+            ignoreMissingValueFiles: true
+        - repoURL: https://github.com/kappc/platform.git
+          targetRevision: main
+          ref: values
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{ .namespace }}'
+      syncPolicy:
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true

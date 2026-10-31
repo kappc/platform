@@ -1,0 +1,4 @@
+__pycache__/
+/architecture.txt
+/kubernetes/applications/*/charts/
+/kubernetes/scripts/
