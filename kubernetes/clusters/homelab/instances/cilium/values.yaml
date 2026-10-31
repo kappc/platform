@@ -1,10 +1,14 @@
 ---
 cilium:
+  bpf:
+    masquerade: true
   ipam:
     operator:
       clusterPoolIPv4PodCIDRList:
         - 10.0.0.0/16
+  ipv4NativeRoutingCIDR: 10.0.0.0/16
+  k8sServiceHost: auto
+  kubeProxyReplacement: true
   operator:
     replicas: 1
-  ipv4NativeRoutingCIDR: 10.0.0.0/16
   routingMode: native
