@@ -1,0 +1,7 @@
+---
+application: cilium
+argocd:
+  name: cilium
+  project: platform
+  rolloutGroup: infrastructure
+namespace: kube-system
