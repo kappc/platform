@@ -9,6 +9,8 @@ traefik:
     kubernetesIngress:
       ingressEndpoint:
         ip: 192.168.49.2
+      publishedService:
+        enabled: false
   service:
     spec:
       type: NodePort
