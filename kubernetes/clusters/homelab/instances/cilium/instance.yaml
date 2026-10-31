@@ -4,4 +4,10 @@ argocd:
   name: cilium
   project: platform
   rolloutGroup: infrastructure
+  ignoreDifferences:
+    - group: ""
+      kind: Secret
+      jqPathExpressions:
+        - 'select(.metadata.labels["cilium.io/helm-template-non-idempotent"] == "true") | .data'
+        - 'select(.metadata.labels["cilium.io/helm-template-non-idempotent"] == "true") | .type'
 namespace: kube-system

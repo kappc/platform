@@ -62,4 +62,10 @@ spec:
         syncOptions:
           - CreateNamespace=true
           - Prune=true
+          - RespectIgnoreDifferences=true
           - ServerSideApply=true
+  templatePatch: |
+    {{- if hasKey .argocd "ignoreDifferences" }}
+    spec:
+      ignoreDifferences: {{ toJson .argocd.ignoreDifferences }}
+    {{- end }}
