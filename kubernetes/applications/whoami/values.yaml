@@ -5,9 +5,9 @@ deployment:
 httpRoute:
   enabled: true
   parentRefs:
-    - name: envoy-gateway
+    - name: gateway
       namespace: envoy-gateway-system
-      sectionName: web
+      sectionName: http
   path: /
 
 image:

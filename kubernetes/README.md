@@ -91,7 +91,7 @@ Add one manifest under `clusters/<cluster>/argocd/projects/` for every AppProjec
 
 ## Accessing Whoami
 
-The Envoy Gateway chart creates a Gateway named `gateway` in `envoy-gateway-system`, using GatewayClass `envoy-gateway`. Its `http` listener accepts HTTPRoutes from any namespace on port 80. The homelab instance exposes the generated Envoy proxy Service as a NodePort on port `30080`. However, the current whoami chart values reference Gateway `envoy-gateway` and listener `web`; those references do not match the Gateway name and listener in the Envoy Gateway chart, so the HTTPRoute will not attach as configured. Align the `httpRoute.parentRefs` values with Gateway `gateway` and listener `http` before expecting requests to work. Once aligned, map `whoami.homelab.test` to the Minikube node address on the client (for example, in `/etc/hosts`) and browse to `http://whoami.homelab.test:30080`.
+The Envoy Gateway chart creates a Gateway named `gateway` in `envoy-gateway-system`, using GatewayClass `envoy-gateway`. Its `http` listener accepts HTTPRoutes from any namespace on port 80. Whoami's HTTPRoute targets that Gateway and listener for `whoami.homelab.test`. The homelab instance exposes the generated Envoy proxy Service as a NodePort on port `30080`; map the hostname to the Minikube node address on the client (for example, in `/etc/hosts`) and browse to `http://whoami.homelab.test:30080`.
 
 This initial Gateway is HTTP-only. If the cluster later provides a load balancer, change the Envoy proxy Service configuration in `applications/envoy-gateway/templates/envoyproxy.yaml`.
 
