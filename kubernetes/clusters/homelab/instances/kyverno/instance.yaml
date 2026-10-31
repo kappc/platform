@@ -9,4 +9,10 @@ argocd:
       kind: CustomResourceDefinition
       jqPathExpressions:
         - 'select(.metadata.name | endswith(".policies.kyverno.io")) | .spec.conversion'
+        - >-
+          select(.metadata.name | endswith(".policies.kyverno.io"))
+          | select(.metadata.labels == {}) | .metadata.labels
+        - >-
+          select(.metadata.name | endswith(".policies.kyverno.io"))
+          | select(.metadata.annotations == {}) | .metadata.annotations
 namespace: kyverno
