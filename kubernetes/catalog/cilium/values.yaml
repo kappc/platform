@@ -1,0 +1,5 @@
+---
+cilium:
+  bpf:
+    masquerade: false
+  kubeProxyReplacement: false

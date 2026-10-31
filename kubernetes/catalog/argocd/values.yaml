@@ -3,3 +3,15 @@ argo-cd:
   configs:
     params:
       applicationsetcontroller.enable.progressive.syncs: "true"
+  dex:
+    networkPolicy:
+      create: true
+  global:
+    networkPolicy:
+      create: false
+  notifications:
+    networkPolicy:
+      create: true
+  redis:
+    networkPolicy:
+      create: true

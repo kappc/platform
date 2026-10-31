@@ -1,7 +1,5 @@
 ---
 cilium:
-  bpf:
-    masquerade: true
   ipam:
     operator:
       clusterPoolIPv4PodCIDRList:
@@ -9,7 +7,6 @@ cilium:
   ipv4NativeRoutingCIDR: 10.0.0.0/16
   k8sServiceHost: control-plane.minikube.internal
   k8sServicePort: 8443
-  kubeProxyReplacement: true
   operator:
     replicas: 1
   routingMode: native
