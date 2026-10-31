@@ -1,0 +1,6 @@
+---
+app: kyverno-policies
+instance: kyverno-policies
+namespace: kyverno
+project: platform
+rolloutGroup: platform

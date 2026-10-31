@@ -22,6 +22,11 @@ spec:
             - key: rollout-group
               operator: In
               values:
+                - infrastructure
+        - matchExpressions:
+            - key: rollout-group
+              operator: In
+              values:
                 - platform
         - matchExpressions:
             - key: rollout-group
@@ -56,4 +61,5 @@ spec:
       syncPolicy:
         syncOptions:
           - CreateNamespace=true
+          - Prune=true
           - ServerSideApply=true

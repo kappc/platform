@@ -1,0 +1,9 @@
+---
+policy-reporter:
+  ui:
+    clusters:
+      - name: homelab
+        host: http://policy-reporter.policy-reporter.svc.cluster.local:8080
+        plugins:
+          - name: kyverno
+            host: http://policy-reporter-kyverno-plugin.policy-reporter.svc.cluster.local:8080

@@ -1,0 +1,6 @@
+---
+apiVersion: v2
+name: kyverno-policies
+description: Baseline Kubernetes security and resource policies
+type: application
+version: 0.1.0

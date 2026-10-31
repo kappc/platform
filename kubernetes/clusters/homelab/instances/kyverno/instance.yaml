@@ -1,0 +1,6 @@
+---
+app: kyverno
+instance: kyverno
+namespace: kyverno
+project: platform
+rolloutGroup: infrastructure

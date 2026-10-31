@@ -3,4 +3,4 @@ app: argocd
 instance: argocd
 namespace: argocd
 project: argocd
-rolloutGroup: platform
+rolloutGroup: infrastructure

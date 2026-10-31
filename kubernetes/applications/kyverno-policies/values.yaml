@@ -1,0 +1,6 @@
+---
+policies:
+  disallowLatestTag:
+    failureAction: Audit
+  requirePodRequestsLimits:
+    failureAction: Audit

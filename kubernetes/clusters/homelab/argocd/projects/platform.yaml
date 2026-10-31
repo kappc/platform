@@ -20,6 +20,8 @@ spec:
       kind: CustomResourceDefinition
     - group: gateway.networking.k8s.io
       kind: GatewayClass
+    - group: kyverno.io
+      kind: ClusterPolicy
     - group: admissionregistration.k8s.io
       kind: MutatingWebhookConfiguration
     - group: admissionregistration.k8s.io

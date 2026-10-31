@@ -1,0 +1,10 @@
+---
+apiVersion: v2
+name: kyverno-controller
+description: Kyverno policy engine
+type: application
+version: 0.1.0
+dependencies:
+  - name: kyverno
+    version: 3.9.2
+    repository: oci://ghcr.io/kyverno/charts

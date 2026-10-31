@@ -1,0 +1,6 @@
+---
+app: policy-reporter
+instance: policy-reporter
+namespace: policy-reporter
+project: platform
+rolloutGroup: platform
