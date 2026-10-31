@@ -1,6 +1,6 @@
 # Kubernetes Platform
 
-This directory is the GitOps source for the `homelab` cluster. Application charts live under `applications/`; per-cluster inventory, AppProjects, and overrides live under `clusters/homelab/instances/` and `clusters/homelab/argocd/`.
+This directory is the GitOps source for the `homelab` cluster. Reusable application charts live under `catalog/`; per-cluster inventory, AppProjects, and overrides live under `clusters/homelab/instances/` and `clusters/homelab/argocd/`.
 
 Chart dependencies are pinned in each `Chart.yaml`/`Chart.lock` and pulled from OCI registries; chart archives are never committed. YAML manifests and values use the `.yaml` extension and begin with a YAML document separator. Helm's generated `Chart.lock` keeps its required filename.
 
@@ -23,9 +23,10 @@ kubectl cluster-info
 Install Cilium before Argo CD. Cilium replaces Minikube's initial CNI configuration, so this is a prerequisite for a fresh cluster bootstrap; do not sync Cilium into a cluster with workloads until you have planned and validated the CNI migration.
 
 ```sh
-helm dependency build kubernetes/applications/cilium
-helm upgrade --install cilium kubernetes/applications/cilium \
-  --namespace kube-system
+helm dependency build kubernetes/catalog/cilium
+helm upgrade --install cilium kubernetes/catalog/cilium \
+  --namespace kube-system \
+  -f kubernetes/clusters/homelab/instances/cilium/values.yaml
 
 kubectl rollout status daemonset/cilium -n kube-system --timeout=5m
 kubectl rollout status deployment/cilium-operator -n kube-system --timeout=5m
@@ -34,11 +35,11 @@ kubectl rollout status deployment/cilium-operator -n kube-system --timeout=5m
 Install the same pinned Argo CD chart and values that the Git-managed `argocd` application will reconcile:
 
 ```sh
-helm dependency build kubernetes/applications/argocd
-helm upgrade --install argocd kubernetes/applications/argocd \
+helm dependency build kubernetes/catalog/argocd
+helm upgrade --install argocd kubernetes/catalog/argocd \
   --namespace argocd \
   --create-namespace \
-  -f kubernetes/applications/argocd/values.yaml
+  -f kubernetes/catalog/argocd/values.yaml
 
 kubectl wait --for=condition=Established --timeout=120s \
   crd/appprojects.argoproj.io \
@@ -63,7 +64,7 @@ kubectl -n argocd get secret argocd-initial-admin-secret \
 
 Sign in as `admin` at `https://localhost:8080`. The port-forward stops when you close the command or terminal. Change the initial password after the first login, then remove the `argocd-initial-admin-secret` Secret.
 
-The bootstrap Helm install creates Argo CD; the root Application recursively loads the AppProjects and the ApplicationSet directly from the `argocd/` directory. AppProjects sync in wave `-4`, and the ApplicationSet in wave `-2`. Cilium, Argo CD, Envoy Gateway, and Kyverno are in the `infrastructure` rollout group. The Cilium chart is pinned to `1.20.4`; its only values override sets the cluster-pool IPv4 CIDR to `10.0.0.0/16`, avoiding overlap with Minikube's default `10.96.0.0/12` Service CIDR. Other settings use chart defaults: cluster-pool IPAM, VXLAN tunneling, and kube-proxy enabled. Its generated `cilium` Application reconciles the same chart after bootstrap. The Envoy Gateway chart installs its Gateway API and Envoy Gateway CRDs as part of the generated `envoy-gateway` Application; Argo CD syncs CRDs before dependent custom resources in that application. The same chart also configures the controller and Gateway. Note that Helm does not upgrade CRDs stored in a chart's `crds/` directory during a chart version upgrade; follow Envoy Gateway's documented CRD upgrade procedure before upgrading the controller. Kyverno policies and Policy Reporter are separate Applications in the `platform` rollout group, which runs after the infrastructure group is healthy. Policy Reporter is pinned to chart `3.11.2`, with its UI and Kyverno plugin enabled. The dashboard is not exposed through the Gateway; access it with `kubectl port-forward -n policy-reporter svc/policy-reporter-ui 8082:8080` and browse to `http://localhost:8082/`. The generated `argocd` Application uses the same wrapper chart, values, and release name. To upgrade Argo CD, update the `argo-cd` chart dependency version in `applications/argocd/Chart.yaml`, refresh and commit `applications/argocd/Chart.lock`, and merge the change. The generated Application then reconciles that chart version through RollingSync. For a new cluster, bootstrap from the versions and values recorded in the repository.
+The bootstrap Helm install creates Argo CD; the root Application recursively loads the AppProjects and the ApplicationSet directly from the `argocd/` directory. AppProjects sync in wave `-4`, and the ApplicationSet in wave `-2`. Cilium, Argo CD, Envoy Gateway, and Kyverno are in the `infrastructure` rollout group. The Cilium chart is pinned to `1.20.4`; its homelab override sets the cluster-pool IPv4 CIDR to `10.0.0.0/16`, avoiding overlap with Minikube's default `10.96.0.0/12` Service CIDR, and runs a single operator replica because this single-node Minikube cannot schedule both replicas when they request the same host ports. Other settings use chart defaults: cluster-pool IPAM, VXLAN tunneling, and kube-proxy enabled. Its generated `cilium` Application reconciles the same chart after bootstrap. The Envoy Gateway chart installs its Gateway API and Envoy Gateway CRDs as part of the generated `envoy-gateway` Application; Argo CD syncs CRDs before dependent custom resources in that application. The same chart also configures the controller and Gateway. Note that Helm does not upgrade CRDs stored in a chart's `crds/` directory during a chart version upgrade; follow Envoy Gateway's documented CRD upgrade procedure before upgrading the controller. Kyverno policies and Policy Reporter are separate Applications in the `platform` rollout group, which runs after the infrastructure group is healthy. Policy Reporter is pinned to chart `3.11.2`, with its UI and Kyverno plugin enabled. The dashboard is not exposed through the Gateway; access it with `kubectl port-forward -n policy-reporter svc/policy-reporter-ui 8082:8080` and browse to `http://localhost:8082/`. The generated `argocd` Application uses the same wrapper chart, values, and release name. To upgrade Argo CD, update the `argo-cd` chart dependency version in `catalog/argocd/Chart.yaml`, refresh and commit `catalog/argocd/Chart.lock`, and merge the change. The generated Application then reconciles that chart version through RollingSync. For a new cluster, bootstrap from the versions and values recorded in the repository.
 
 After applying the root Application, let Argo CD own subsequent changes; do not run `helm upgrade` manually against the same release.
 
@@ -71,11 +72,11 @@ To update chart dependencies and refresh lock files:
 
 ```sh
 helm repo add policy-reporter https://kyverno.github.io/policy-reporter --force-update
-helm dependency update kubernetes/applications/argocd
-helm dependency update kubernetes/applications/cilium
-helm dependency update kubernetes/applications/envoy-gateway
-helm dependency update kubernetes/applications/kyverno
-helm dependency update kubernetes/applications/policy-reporter
+helm dependency update kubernetes/catalog/argocd
+helm dependency update kubernetes/catalog/cilium
+helm dependency update kubernetes/catalog/envoy-gateway
+helm dependency update kubernetes/catalog/kyverno
+helm dependency update kubernetes/catalog/policy-reporter
 ```
 
 Helm pulls charts from the registries into a local cache or `charts/` directory as needed. Archives are ignored by Git and are not part of the application definitions.
@@ -94,7 +95,7 @@ The `instance.yaml` descriptor selects a catalog application, destination namesp
 
 | Field | Meaning | Example |
 | --- | --- | --- |
-| `application` | Catalog entry under `applications/` | `whoami` |
+| `application` | Catalog entry under `catalog/` | `whoami` |
 | `argocd.name` | Unique Argo CD Application and Helm release name | `whoami` or `whoami-internal` |
 | `argocd.project` | Argo CD AppProject that constrains source, destination, and resource permissions | `platform` |
 | `argocd.rolloutGroup` | RollingSync group for ordered deployment | `workload` |
@@ -114,13 +115,13 @@ For example, two `whoami` instances can use the same `application` while having 
 
 Add one manifest under `clusters/<cluster>/argocd/projects/` for every AppProject; the root Application recursively discovers these manifests. The generic ApplicationSet reads `argocd.project` and `argocd.rolloutGroup` from each inventory descriptor, so different tools can use different projects without separate ApplicationSets. The `platform` project allows namespaced applications in any namespace of the local cluster; keep its source repositories and cluster-scoped resource allowlist narrow. The included `argocd` project is reserved for the Argo CD control plane; `platform` is for platform services and workloads, including Cilium's cluster-scoped resources, the Gateway API and Envoy Gateway CRDs, and Kyverno ClusterPolicies. RollingSync applies `infrastructure`, then `platform`, then `workload`.
 
-Kyverno is pinned to chart `3.9.2` (app version `1.19.2`). The separate policy chart installs audit-only ClusterPolicies that report containers missing CPU/memory requests or CPU/memory limits and image references that use the mutable `:latest` tag or omit a tag (which implicitly uses `latest`). Digest-pinned references are allowed. Both policies cover regular, init, and ephemeral containers and do not block admissions. Policy Reporter collects these results and provides a UI with the Kyverno plugin. Configure each policy's `failureAction` and optional `excludedNamespaces` independently in `applications/kyverno-policies/values.yaml`; for example, set `policies.disallowLatestTag.failureAction` to `Enforce`. Review reports before enforcing policies, and keep namespace exclusions narrow and intentional.
+Kyverno is pinned to chart `3.9.2` (app version `1.19.2`). The separate policy chart installs audit-only ClusterPolicies that report containers missing CPU/memory requests or CPU/memory limits and image references that use the mutable `:latest` tag or omit a tag (which implicitly uses `latest`). Digest-pinned references are allowed. Both policies cover regular, init, and ephemeral containers and do not block admissions. Policy Reporter collects these results and provides a UI with the Kyverno plugin. Configure each policy's `failureAction` and optional `excludedNamespaces` independently in `catalog/kyverno-policies/values.yaml`; for example, set `policies.disallowLatestTag.failureAction` to `Enforce`. Review reports before enforcing policies, and keep namespace exclusions narrow and intentional.
 
 ## Accessing Whoami
 
 The Envoy Gateway chart creates a Gateway named `gateway` in `envoy-gateway-system`, using GatewayClass `envoy-gateway`. Its `http` listener accepts HTTPRoutes from any namespace on port 80. Whoami's HTTPRoute targets that Gateway and listener for `whoami.homelab.test`. The homelab instance exposes the generated Envoy proxy Service as a NodePort on port `30080`; map the hostname to the Minikube node address on the client (for example, in `/etc/hosts`) and browse to `http://whoami.homelab.test:30080`.
 
-This initial Gateway is HTTP-only. If the cluster later provides a load balancer, change the Envoy proxy Service configuration in `applications/envoy-gateway/templates/envoyproxy.yaml`.
+This initial Gateway is HTTP-only. If the cluster later provides a load balancer, change the Envoy proxy Service configuration in `catalog/envoy-gateway/templates/envoyproxy.yaml`.
 
 Envoy Gateway supports route-scoped external authorization and OIDC through its `SecurityPolicy` CRD. This repository does not deploy an authentication backend or policy yet.
 
@@ -129,22 +130,22 @@ Envoy Gateway supports route-scoped external authorization and OIDC through its 
 Build dependencies before linting the umbrella charts, then lint and render each application with the appropriate shared and instance values:
 
 ```sh
-helm dependency build kubernetes/applications/argocd
-helm dependency build kubernetes/applications/cilium
-helm dependency build kubernetes/applications/envoy-gateway
-helm dependency build kubernetes/applications/kyverno
-helm dependency build kubernetes/applications/policy-reporter
-helm lint kubernetes/applications/argocd
-helm lint kubernetes/applications/cilium
-helm lint kubernetes/applications/envoy-gateway
-helm lint kubernetes/applications/kyverno
-helm lint kubernetes/applications/kyverno-policies
-helm lint kubernetes/applications/policy-reporter
-helm lint kubernetes/applications/whoami \
+helm dependency build kubernetes/catalog/argocd
+helm dependency build kubernetes/catalog/cilium
+helm dependency build kubernetes/catalog/envoy-gateway
+helm dependency build kubernetes/catalog/kyverno
+helm dependency build kubernetes/catalog/policy-reporter
+helm lint kubernetes/catalog/argocd
+helm lint kubernetes/catalog/cilium
+helm lint kubernetes/catalog/envoy-gateway
+helm lint kubernetes/catalog/kyverno
+helm lint kubernetes/catalog/kyverno-policies
+helm lint kubernetes/catalog/policy-reporter
+helm lint kubernetes/catalog/whoami \
   --set httpRoute.hostname=whoami.validation.invalid
-helm template whoami kubernetes/applications/whoami \
+helm template whoami kubernetes/catalog/whoami \
   --namespace whoami \
-  -f kubernetes/applications/whoami/values.yaml \
+  -f kubernetes/catalog/whoami/values.yaml \
   -f kubernetes/clusters/homelab/instances/whoami/values.yaml
 ```
 

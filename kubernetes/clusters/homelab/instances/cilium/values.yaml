@@ -4,3 +4,5 @@ cilium:
     operator:
       clusterPoolIPv4PodCIDRList:
         - 10.0.0.0/16
+  operator:
+    replicas: 1

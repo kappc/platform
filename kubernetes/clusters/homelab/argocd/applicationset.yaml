@@ -45,11 +45,11 @@ spec:
       sources:
         - repoURL: https://github.com/kappc/platform.git
           targetRevision: main
-          path: kubernetes/applications/{{ .application }}
+          path: kubernetes/catalog/{{ .application }}
           helm:
             releaseName: '{{ .argocd.name }}'
             valueFiles:
-              - $values/kubernetes/applications/{{ .application }}/values.yaml
+              - $values/kubernetes/catalog/{{ .application }}/values.yaml
               - $values/kubernetes/clusters/homelab/instances/{{ .argocd.name }}/values.yaml
             ignoreMissingValueFiles: true
         - repoURL: https://github.com/kappc/platform.git
