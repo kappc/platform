@@ -1,0 +1,10 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-dashboard
+  labels:
+    {{- include "homer.labels" . | nindent 4 }}
+data:
+  config.yml: |
+    {{- toYaml .Values.dashboard | nindent 4 }}

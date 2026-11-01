@@ -1,0 +1,29 @@
+---
+httpRoute:
+  hostname: homer.homelab.test
+
+dashboard:
+  title: Homelab
+  subtitle: Platform services
+  header: true
+  footer: false
+  theme: default
+  services:
+    - name: Applications
+      icon: fas fa-cloud
+      items:
+        - name: Authentik
+          icon: fas fa-user-shield
+          subtitle: Identity and access
+          url: http://authentik.homelab.test:30080
+          target: _blank
+        - name: Nextcloud
+          icon: fas fa-cloud
+          subtitle: Files and collaboration
+          url: http://nextcloud.homelab.test:30080
+          target: _blank
+        - name: Whoami
+          icon: fas fa-info-circle
+          subtitle: HTTP routing test
+          url: http://whoami.homelab.test:30080
+          target: _blank
