@@ -1,0 +1,7 @@
+---
+application: cloudnative-pg
+argocd:
+  name: cloudnative-pg
+  project: platform
+  rolloutGroup: platform
+namespace: cnpg-system

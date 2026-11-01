@@ -1,0 +1,19 @@
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: DatabaseRole
+metadata:
+  name: {{ printf "%s-app" .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  cluster:
+    name: {{ printf "%s-db" .Release.Name }}
+  name: {{ .Release.Name }}
+  login: true
+  superuser: false
+  createdb: false
+  createrole: false
+  replication: false
+  bypassrls: false
+  inherit: true
+  passwordSecret:
+    name: {{ printf "%s-db" .Release.Name }}

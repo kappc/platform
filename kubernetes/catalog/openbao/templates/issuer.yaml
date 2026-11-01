@@ -1,0 +1,17 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: openbao-ca
+  namespace: {{ .Release.Namespace }}
+spec:
+  ca:
+    secretName: openbao-ca
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: openbao-selfsigned
+  namespace: {{ .Release.Namespace }}
+spec:
+  selfSigned: {}

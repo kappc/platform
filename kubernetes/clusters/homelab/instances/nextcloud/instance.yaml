@@ -1,0 +1,7 @@
+---
+application: nextcloud
+argocd:
+  name: nextcloud
+  project: platform
+  rolloutGroup: workload
+namespace: nextcloud

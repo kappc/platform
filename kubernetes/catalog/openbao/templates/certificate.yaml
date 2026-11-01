@@ -1,0 +1,48 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: openbao-ca
+  namespace: {{ .Release.Namespace }}
+spec:
+  isCA: true
+  commonName: openbao-ca
+  secretName: openbao-ca
+  duration: 87600h
+  privateKey:
+    rotationPolicy: Always
+  issuerRef:
+    name: openbao-selfsigned
+    kind: Issuer
+    group: cert-manager.io
+  usages:
+    - digital signature
+    - cert sign
+    - crl sign
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: openbao
+  namespace: {{ .Release.Namespace }}
+spec:
+  secretName: openbao-tls
+  duration: 2160h
+  renewBefore: 360h
+  privateKey:
+    rotationPolicy: Always
+  dnsNames:
+    - localhost
+    - {{ printf "openbao.%s.svc" .Release.Namespace }}
+    - {{ printf "openbao.%s.svc.cluster.local" .Release.Namespace }}
+    - "*.openbao-internal"
+    - {{ printf "*.openbao-internal.%s.svc" .Release.Namespace | quote }}
+    - {{ printf "*.openbao-internal.%s.svc.cluster.local" .Release.Namespace | quote }}
+  issuerRef:
+    name: openbao-ca
+    kind: Issuer
+    group: cert-manager.io
+  usages:
+    - digital signature
+    - key encipherment
+    - server auth

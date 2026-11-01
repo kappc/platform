@@ -121,6 +121,78 @@ The [Kyverno policies catalog chart](./catalog/kyverno-policies/Chart.yaml) wrap
 
 To add a custom policy, add a separate `ValidatingPolicy` manifest under `catalog/kyverno-policies/templates/policies/`. The upstream PSS policies have their own shared `kyverno-policies.validationFailureAction`; keep both action settings aligned when changing from Audit. The `platform` AppProject permits `ValidatingPolicy` resources.
 
+## Nextcloud and Secret Management
+
+The homelab inventory installs cert-manager and External Secrets Operator in the `infrastructure` rollout group. OpenBao and the CloudNativePG operator run in the `platform` group, before the Nextcloud `workload`. Operators use their standard namespaces (`cert-manager`, `external-secrets`, and `cnpg-system`). The OpenBao Application owns the shared `ClusterSecretStore`, restricted by its homelab values to the Nextcloud namespace. The Nextcloud workload chart owns its PostgreSQL `Cluster` and `DatabaseRole`, two `ExternalSecret` resources, and HTTPRoute. The `nextcloud-admin` and `nextcloud-db` Kubernetes Secrets are generated from OpenBao; credentials are not stored in Git or Helm values. The DB Secret has just two keys (`username` and `password`), shared by CNPG and Nextcloud.
+
+The CNPG `Cluster` creates the PostgreSQL server and database. `DatabaseRole` is a separate declaration for the application's PostgreSQL login: it tells CNPG to ensure the `nextcloud` role exists, has only the configured non-privileged login attributes, and uses the password from the ESO-managed Secret. It is not another cluster or database. This lets ESO source and rotate the password without putting it in the Cluster manifest.
+
+Use one CNPG `Cluster` per independently managed workload database in that workload's catalog app and namespace. This keeps database credentials, storage, backup/restore, upgrades, and resource tuning aligned with the workload lifecycle. Keep only the CNPG operator as a shared platform service. Sharing a database cluster can be reasonable for tightly coupled applications or very constrained clusters, but requires deliberate database/role separation and couples maintenance and recovery. Argo CD requires explicit confirmation before pruning the Nextcloud database Cluster. A one-instance Cluster is appropriate for this single-node Minikube setup, not for high availability.
+
+OpenBao has persistent single-node Raft storage and uses Kubernetes authentication for External Secrets. Initialize it once; after a pod restart, unseal it again. The OpenBao app remains progressing while it is sealed, holding the platform rollout before Nextcloud.
+
+For the one-time bootstrap, open a shell in the pod:
+
+```sh
+kubectl exec -it -n openbao openbao-0 -- sh
+```
+
+Run the following inside the pod. Save the displayed recovery keys and root token securely outside the cluster; use three different recovery keys to unseal:
+
+```sh
+export BAO_ADDR=https://localhost:8200
+export BAO_CACERT=/openbao/ca/tls.crt
+bao operator init -key-shares=5 -key-threshold=3
+bao operator unseal # Repeat twice with different recovery keys.
+bao login
+# Keep the root token for administration only.
+bao secrets enable -path=secret kv-v2
+bao auth enable kubernetes
+bao write auth/kubernetes/config kubernetes_host=https://kubernetes.default.svc
+bao policy write nextcloud-read - <<'EOF'
+path "secret/data/nextcloud" {
+  capabilities = ["read"]
+}
+EOF
+bao write auth/kubernetes/role/external-secrets \
+  bound_service_account_names=external-secrets \
+  bound_service_account_namespaces=external-secrets \
+  bound_service_account_audiences=openbao \
+  token_policies=nextcloud-read \
+  token_ttl=1h
+```
+
+The chart grants OpenBao's service account `system:auth-delegator`; leaving `token_reviewer_jwt` and `kubernetes_ca_cert` unset lets it use its projected token and CA.
+
+To seed Nextcloud, create a temporary JSON file with mode `0600` on encrypted local storage (never in Git) containing `admin-username`, `admin-password`, `db-username`, and `db-password`. `admin-username` is the Nextcloud web administrator; `db-username` is the PostgreSQL login shared by Nextcloud and CNPG and must be `nextcloud`. Rotate the database password by changing `db-password` in OpenBao; keep the username unchanged. From a second terminal, stream the file into the pod:
+
+```sh
+kubectl exec -i -n openbao openbao-0 -- \
+  sh -c 'umask 077; cat > /tmp/nextcloud-secrets.json' \
+  < /secure/path/nextcloud-secrets.json
+```
+
+Back in the OpenBao shell, write it to the KV store, remove the pod copy, and then remove the local file:
+
+```sh
+bao kv put secret/nextcloud @/tmp/nextcloud-secrets.json
+rm /tmp/nextcloud-secrets.json
+```
+
+Wait for the generated secrets and database before using Nextcloud:
+
+```sh
+kubectl wait -n nextcloud \
+  --for=condition=Ready externalsecret/nextcloud-admin \
+  externalsecret/nextcloud-db --timeout=5m
+kubectl wait -n nextcloud \
+  --for=condition=Ready cluster.postgresql.cnpg.io/nextcloud-db --timeout=10m
+kubectl wait -n nextcloud \
+  --for=condition=Ready databaserole.postgresql.cnpg.io/nextcloud-app --timeout=5m
+```
+
+Nextcloud is available at `http://nextcloud.homelab.test:30080`; map that hostname to the Minikube node address as for Whoami. When rotating the database password in OpenBao, ESO updates the Kubernetes Secret and CNPG reconciles the role; restart the Nextcloud workload afterward so its environment picks up the new password. ESO writes the synced values into ordinary Kubernetes Secrets; External Secrets keeps credentials out of Git but does not itself encrypt Kubernetes API storage. Kubernetes Secrets may be stored unencrypted in etcd unless encryption at rest is configured. This local setup uses Minikube's `standard` hostpath StorageClass, one PostgreSQL instance, and one OpenBao Raft member. It is not highly available, and these volumes are not backups. Configure and test off-cluster backups before storing important data, and provide TLS at the public Gateway before exposing the application beyond a trusted lab network.
+
 ## Accessing Whoami
 
 Whoami is available at `http://whoami.homelab.test:30080`. Map `whoami.homelab.test` to the Minikube node address on the client (for example, in `/etc/hosts`). The homelab Envoy proxy Service uses NodePort `30080`.

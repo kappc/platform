@@ -1,0 +1,7 @@
+---
+application: external-secrets
+argocd:
+  name: external-secrets
+  project: platform
+  rolloutGroup: infrastructure
+namespace: external-secrets

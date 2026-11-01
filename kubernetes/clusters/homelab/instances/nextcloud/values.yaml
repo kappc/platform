@@ -1,0 +1,10 @@
+---
+database:
+  storage:
+    storageClass: standard
+
+nextcloud:
+  nextcloud:
+    host: nextcloud.homelab.test
+  persistence:
+    storageClass: standard

@@ -1,0 +1,59 @@
+---
+openbao:
+  global:
+    tlsDisable: false
+  injector:
+    enabled: false
+  server:
+    affinity: null
+    dataStorage:
+      size: 5Gi
+    ha:
+      enabled: true
+      replicas: 1
+      apiAddr: https://openbao.openbao.svc:8200
+      disruptionBudget:
+        enabled: false
+      raft:
+        enabled: true
+        setNodeId: true
+        config: |
+          ui = false
+
+          listener "tcp" {
+            tls_disable = 0
+            address = "[::]:8200"
+            cluster_address = "[::]:8201"
+            tls_cert_file = "/openbao/tls/tls.crt"
+            tls_key_file = "/openbao/tls/tls.key"
+          }
+
+          storage "raft" {
+            path = "/openbao/data"
+          }
+
+          service_registration "kubernetes" {}
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    volumes:
+      - name: tls
+        secret:
+          secretName: openbao-tls
+      - name: ca
+        secret:
+          secretName: openbao-ca
+    volumeMounts:
+      - name: tls
+        mountPath: /openbao/tls
+        readOnly: true
+      - name: ca
+        mountPath: /openbao/ca
+        readOnly: true
+secretStore:
+  enabled: false
+  allowedNamespaces: []

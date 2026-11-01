@@ -1,0 +1,7 @@
+---
+application: cert-manager
+argocd:
+  name: cert-manager
+  project: platform
+  rolloutGroup: infrastructure
+namespace: cert-manager

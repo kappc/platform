@@ -1,0 +1,61 @@
+---
+database:
+  image:
+    repository: ghcr.io/cloudnative-pg/postgresql
+    tag: "17.7"
+    digest: sha256:dab846a58e8ca3c8872584ab2225ee93fb9e659a87c52e163fefae9275b46f51
+  storage:
+    size: 8Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+
+httpRoute:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: gateway
+      namespace: envoy-gateway-system
+      sectionName: http
+
+nextcloud:
+  nextcloud:
+    existingSecret:
+      enabled: true
+      secretName: nextcloud-admin
+  externalDatabase:
+    enabled: true
+    type: postgresql
+    host: nextcloud-db-rw
+    existingSecret:
+      enabled: true
+      secretName: nextcloud-db
+      usernameKey: username
+      passwordKey: password
+  internalDatabase:
+    enabled: false
+  persistence:
+    enabled: true
+    size: 20Gi
+  cronjob:
+    enabled: true
+    type: cronjob
+    cronjob:
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          cpu: 250m
+          memory: 256Mi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
