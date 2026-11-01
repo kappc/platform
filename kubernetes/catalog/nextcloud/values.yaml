@@ -65,8 +65,4 @@ nextcloud:
       memory: 1Gi
   startupProbe:
     enabled: true
-    initialDelaySeconds: 30
-    periodSeconds: 10
-    timeoutSeconds: 5
     failureThreshold: 60
-    successThreshold: 1

@@ -1,0 +1,11 @@
+---
+database:
+  storage:
+    storageClass: standard
+
+authentik:
+  server:
+    route:
+      main:
+        hostnames:
+          - authentik.homelab.test

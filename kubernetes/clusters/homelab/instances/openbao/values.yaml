@@ -7,4 +7,5 @@ openbao:
 secretStore:
   enabled: true
   allowedNamespaces:
+    - authentik
     - nextcloud

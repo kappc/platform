@@ -4,7 +4,7 @@ httpRoute:
 
 dashboard:
   title: Homelab
-  subtitle: Platform services
+  subtitle: Platform Services
   header: true
   footer: false
   theme: default
@@ -14,16 +14,16 @@ dashboard:
       items:
         - name: Authentik
           icon: fas fa-user-shield
-          subtitle: Identity and access
+          subtitle: Identity and Access
           url: http://authentik.homelab.test:30080
           target: _blank
         - name: Nextcloud
           icon: fas fa-cloud
-          subtitle: Files and collaboration
+          subtitle: Files and Collaboration
           url: http://nextcloud.homelab.test:30080
           target: _blank
         - name: Whoami
           icon: fas fa-info-circle
-          subtitle: HTTP routing test
+          subtitle: HTTP Routing Test
           url: http://whoami.homelab.test:30080
           target: _blank
