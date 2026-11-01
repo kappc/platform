@@ -137,13 +137,13 @@ For the one-time bootstrap, open a shell in the pod:
 kubectl exec -it -n openbao openbao-0 -- sh
 ```
 
-Run the following inside the pod. Save the displayed recovery keys and root token securely outside the cluster; use three different recovery keys to unseal:
+Run the following inside the pod. Save the displayed unseal keys and root token securely outside the cluster; use three different unseal keys to unseal:
 
 ```sh
 export BAO_ADDR=https://localhost:8200
 export BAO_CACERT=/openbao/ca/tls.crt
 bao operator init -key-shares=5 -key-threshold=3
-bao operator unseal # Repeat twice with different recovery keys.
+bao operator unseal # Repeat twice with different unseal keys.
 bao login
 # Keep the root token for administration only.
 bao secrets enable -path=secret kv-v2

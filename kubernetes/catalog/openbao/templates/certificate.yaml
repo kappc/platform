@@ -10,7 +10,7 @@ spec:
   secretName: openbao-ca
   duration: 87600h
   privateKey:
-    rotationPolicy: Always
+    rotationPolicy: Never
   issuerRef:
     name: openbao-selfsigned
     kind: Issuer
