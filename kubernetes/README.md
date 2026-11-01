@@ -143,7 +143,7 @@ Run the following inside the pod. Save the displayed unseal keys and root token 
 export BAO_ADDR=https://localhost:8200
 export BAO_CACERT=/openbao/ca/tls.crt
 bao operator init -key-shares=5 -key-threshold=3
-bao operator unseal # Repeat twice with different unseal keys.
+bao operator unseal # Repeat three times with different unseal keys.
 bao login
 # Keep the root token for administration only.
 bao secrets enable -path=secret kv-v2
@@ -164,7 +164,18 @@ bao write auth/kubernetes/role/external-secrets \
 
 The chart grants OpenBao's service account `system:auth-delegator`; leaving `token_reviewer_jwt` and `kubernetes_ca_cert` unset lets it use its projected token and CA.
 
-To seed Nextcloud, create a temporary JSON file with mode `0600` on encrypted local storage (never in Git) containing `admin-username`, `admin-password`, `db-username`, and `db-password`. `admin-username` is the Nextcloud web administrator; `db-username` is the PostgreSQL login shared by Nextcloud and CNPG and must be `nextcloud`. Rotate the database password by changing `db-password` in OpenBao; keep the username unchanged. From a second terminal, stream the file into the pod:
+To seed Nextcloud, create a temporary JSON file with mode `0600` on encrypted local storage (never in Git). Use this shape, replacing the password placeholders with unique generated passwords:
+
+```json
+{
+  "admin-username": "admin",
+  "admin-password": "REPLACE_WITH_GENERATED_ADMIN_PASSWORD",
+  "db-username": "nextcloud",
+  "db-password": "REPLACE_WITH_GENERATED_DATABASE_PASSWORD"
+}
+```
+
+`admin-username` is the Nextcloud web administrator; `db-username` is the PostgreSQL login shared by Nextcloud and CNPG and must be `nextcloud`. Rotate the database password by changing `db-password` in OpenBao; keep the username unchanged. From a second terminal, stream the file into the pod:
 
 ```sh
 kubectl exec -i -n openbao openbao-0 -- \

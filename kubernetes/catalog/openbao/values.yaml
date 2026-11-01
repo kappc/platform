@@ -18,7 +18,7 @@ openbao:
         enabled: true
         setNodeId: true
         config: |
-          ui = false
+          ui = true
 
           listener "tcp" {
             tls_disable = 0
@@ -54,6 +54,8 @@ openbao:
       - name: ca
         mountPath: /openbao/ca
         readOnly: true
+  ui:
+    enabled: true
 secretStore:
   enabled: false
   allowedNamespaces: []
