@@ -2,5 +2,5 @@
 envoyProxy:
   service:
     type: NodePort
-    externalTrafficPolicy: Cluster
     nodePort: 30080
+    externalTrafficPolicy: Cluster

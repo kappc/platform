@@ -29,5 +29,5 @@ envoyProxy:
   name: envoy-proxy
   service:
     type: LoadBalancer
-    externalTrafficPolicy: Cluster
     port: 80
+    externalTrafficPolicy: Cluster

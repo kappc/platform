@@ -1,0 +1,36 @@
+---
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: disallow-latest-tag
+  annotations:
+    policies.kyverno.io/title: Disallow Latest Tag
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: Images must specify a non-latest tag or a digest.
+spec:
+  validationActions:
+    - {{ .Values.customPolicies.validationFailureAction }}
+  matchConstraints:
+    resourceRules:
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - pods
+  validations:
+    - message: Images must specify a non-latest tag or a digest.
+      expression: >-
+        object.spec.containers.all(container,
+          container.image.matches('.*(:[^/:@]+|@sha256:[a-f0-9]{64})$')
+          && !container.image.endsWith(':latest')
+        )
+        && (!has(object.spec.initContainers) || object.spec.initContainers.all(container,
+          container.image.matches('.*(:[^/:@]+|@sha256:[a-f0-9]{64})$')
+          && !container.image.endsWith(':latest')
+        ))

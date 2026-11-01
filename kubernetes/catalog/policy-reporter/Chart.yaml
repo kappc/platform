@@ -1,7 +1,7 @@
 ---
 apiVersion: v2
 name: policy-reporter
-description: Policy Reporter with its UI and Kyverno plugin
+description: Policy Reporter dashboard with Kyverno integration
 type: application
 version: 0.1.0
 dependencies:

@@ -1,6 +1,10 @@
 ---
 apiVersion: v2
 name: kyverno-policies
-description: Baseline Kubernetes security and resource policies
+description: Baseline Pod Security and custom Kyverno policies
 type: application
-version: 0.1.0
+version: 0.2.3
+dependencies:
+  - name: kyverno-policies
+    version: 3.9.2
+    repository: https://kyverno.github.io/kyverno

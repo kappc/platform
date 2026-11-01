@@ -1,0 +1,46 @@
+---
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: require-pod-requests-limits
+  annotations:
+    policies.kyverno.io/title: Require Pod Requests and Limits
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: Require CPU and memory requests and limits so workloads can be scheduled and resource use bounded.
+spec:
+  validationActions:
+    - {{ .Values.customPolicies.validationFailureAction }}
+  matchConstraints:
+    resourceRules:
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - pods
+  validations:
+    - message: Containers must define CPU and memory requests and limits.
+      expression: >-
+        object.spec.containers.all(container,
+          has(container.resources)
+          && has(container.resources.requests)
+          && has(container.resources.requests.cpu)
+          && has(container.resources.requests.memory)
+          && has(container.resources.limits)
+          && has(container.resources.limits.cpu)
+          && has(container.resources.limits.memory)
+        )
+        && (!has(object.spec.initContainers) || object.spec.initContainers.all(container,
+          has(container.resources)
+          && has(container.resources.requests)
+          && has(container.resources.requests.cpu)
+          && has(container.resources.requests.memory)
+          && has(container.resources.limits)
+          && has(container.resources.limits.cpu)
+          && has(container.resources.limits.memory)
+        ))

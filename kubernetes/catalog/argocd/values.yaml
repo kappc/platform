@@ -1,14 +1,14 @@
 ---
 argo-cd:
+  global:
+    networkPolicy:
+      create: false
   configs:
     params:
       applicationsetcontroller.enable.progressive.syncs: "true"
   dex:
     networkPolicy:
       create: true
-  global:
-    networkPolicy:
-      create: false
   notifications:
     networkPolicy:
       create: true

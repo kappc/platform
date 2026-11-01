@@ -1,6 +1,7 @@
 ---
-policies:
-  disallowLatestTag:
-    failureAction: Audit
-  requirePodRequestsLimits:
-    failureAction: Audit
+kyverno-policies:
+  podSecurityStandard: baseline
+  validationFailureAction: Audit
+
+customPolicies:
+  validationFailureAction: Audit

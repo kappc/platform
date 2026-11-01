@@ -1,7 +1,7 @@
 ---
 apiVersion: v2
-name: kyverno-controller
-description: Kyverno policy engine
+name: kyverno
+description: Kyverno controller and policy engine
 type: application
 version: 0.1.0
 dependencies:

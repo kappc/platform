@@ -1,7 +1,7 @@
 ---
 apiVersion: v2
 name: cilium
-description: Cilium CNI for the homelab cluster
+description: Cilium CNI for Kubernetes networking
 type: application
 version: 0.1.0
 dependencies:

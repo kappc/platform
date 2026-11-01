@@ -59,7 +59,7 @@ kubectl wait --for=condition=Established --timeout=120s \
   crd/applications.argoproj.io \
   crd/applicationsets.argoproj.io
 kubectl apply -f kubernetes/clusters/homelab/argocd/projects/argocd.yaml
-kubectl apply -f kubernetes/clusters/homelab/argocd-root.yaml
+kubectl apply -f kubernetes/clusters/homelab/argocd/root-application.yaml
 ```
 
 The chart disables Argo CD NetworkPolicies globally because its defaults block kubelet health probes in this Cilium setup. Policies remain enabled for Dex, notifications, and Redis; the application-controller and repo-server have no ingress NetworkPolicy isolation.
@@ -79,7 +79,7 @@ kubectl -n argocd get secret argocd-initial-admin-secret \
 
 Sign in as `admin` at `https://localhost:8080` and change the initial password. The port-forward stops when you close the command.
 
-The root Application loads the AppProjects and ApplicationSet from `clusters/homelab/argocd/`. AppProjects use sync wave `-1`; the ApplicationSet uses the default wave `0`. After bootstrap, make changes through Git and let Argo CD manage the releases.
+The `root` Application recursively loads the AppProjects, ApplicationSet, and its own `root-application.yaml` from `clusters/homelab/argocd/`. The manual `kubectl apply` bootstraps it; afterward, Argo CD reconciles the root Application from Git like the other resources. AppProjects use sync wave `-1`; the ApplicationSet uses the default wave `0`. After bootstrap, make changes through Git and let Argo CD manage the releases.
 
 To upgrade a chart dependency, update its version in the catalog `Chart.yaml`, run `helm dependency update` for that chart, and review and commit the resulting `Chart.lock`. Envoy Gateway CRDs stored in the upstream chart's `crds/` directory need to be upgraded separately; Helm does not upgrade them automatically.
 
@@ -117,7 +117,9 @@ Multiple instances may use the same catalog application with distinct Argo CD na
 
 Add an AppProject manifest under `clusters/<cluster>/argocd/projects/` for each project. The ApplicationSet selects the project and rollout group from each descriptor. Keep project source repositories and cluster-scoped resource permissions as narrow as practical; AppProjects are policy boundaries, not namespaces.
 
-Kyverno policies report missing resource requests or limits and mutable or untagged images in audit mode. Review Policy Reporter results before changing a policy to enforce mode; configure policy actions and exclusions in `catalog/kyverno-policies/values.yaml`.
+The [Kyverno policies catalog chart](./catalog/kyverno-policies/Chart.yaml) wraps the upstream [kyverno-policies chart](https://artifacthub.io/packages/helm/kyverno/kyverno-policies) at the same pinned version as the Kyverno controller. It enables the upstream Baseline Pod Security Standard policies and defines platform policies as individual `ValidatingPolicy` templates in `catalog/kyverno-policies/templates/policies/`. These custom policies report missing resource requests or limits and mutable or untagged images in Audit mode. Review Policy Reporter results before changing the validation action to `Deny`; configure the shared action in the top-level `customPolicies` section of `catalog/kyverno-policies/values.yaml`.
+
+To add a custom policy, add a separate `ValidatingPolicy` manifest under `catalog/kyverno-policies/templates/policies/`. The upstream PSS policies have their own shared `kyverno-policies.validationFailureAction`; keep both action settings aligned when changing from Audit. The `platform` AppProject permits `ValidatingPolicy` resources.
 
 ## Accessing Whoami
 

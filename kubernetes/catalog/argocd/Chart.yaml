@@ -1,7 +1,7 @@
 ---
 apiVersion: v2
 name: argocd
-description: Argo CD control plane for the homelab cluster
+description: Argo CD control plane
 type: application
 version: 0.1.0
 dependencies:
