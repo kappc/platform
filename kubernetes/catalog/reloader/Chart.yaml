@@ -1,0 +1,11 @@
+---
+apiVersion: v2
+name: reloader
+description: Stakater Reloader for restarting workloads when configuration changes
+type: application
+version: 0.1.0
+appVersion: v1.4.23
+dependencies:
+  - name: reloader
+    version: 2.2.19
+    repository: https://stakater.github.io/stakater-charts

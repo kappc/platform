@@ -144,7 +144,7 @@ To add a policy, add a separate `ValidatingPolicy` manifest under `catalog/kyver
 
 ## Homer dashboard
 
-Homer is deployed in the `platform` rollout group at `http://homer.homelab.test:30080`. Cluster-specific dashboard configuration, including apps and links, lives in `clusters/homelab/instances/homer/values.yaml`; edit its `dashboard.services` list to add or remove service links. The ConfigMap checksum triggers a pod rollout when dashboard values change. The image is pinned by release tag and digest in the catalog chart.
+Homer is deployed in the `platform` rollout group at `http://homer.homelab.test:30080`. Cluster-specific dashboard configuration, including apps and links, lives in `clusters/homelab/instances/homer/values.yaml`; edit its `dashboard.services` list to add or remove service links. Stakater Reloader is a separate `platform` catalog app, scoped to the `reloader` and `homer` namespaces. Homer opts in to reload only when its dashboard ConfigMap changes, so changing instance values restarts Homer without a checksum annotation. The image is pinned by release tag and digest in the catalog chart.
 
 ## OpenBao and External Secrets
 
@@ -152,7 +152,7 @@ Homer is deployed in the `platform` rollout group at `http://homer.homelab.test:
 
 Authentik and Nextcloud are separate applications and can be used or managed independently. Neither depends on the other. They share platform infrastructure: OpenBao and External Secrets for secret delivery, and the CloudNativePG operator for PostgreSQL management. Each app has its own PostgreSQL `Cluster`, database role, ExternalSecrets, OpenBao KV entry, and Kubernetes namespace.
 
-The homelab inventory installs cert-manager and External Secrets Operator in the `infrastructure` rollout group. OpenBao, the CloudNativePG operator, Homer, and Authentik run in the `platform` group; Nextcloud runs in the `workload` group. These rollout groups order deployment, not an Authentik-to-Nextcloud dependency. Operators use their standard namespaces (`cert-manager`, `external-secrets`, and `cnpg-system`). OpenBao owns one shared `ClusterSecretStore`, restricted to the `authentik` and `nextcloud` namespaces.
+The homelab inventory installs cert-manager and External Secrets Operator in the `infrastructure` rollout group. OpenBao, the CloudNativePG operator, Homer, Reloader, and Authentik run in the `platform` group; Nextcloud runs in the `workload` group. These rollout groups order deployment, not an Authentik-to-Nextcloud dependency. Operators use their standard namespaces (`cert-manager`, `external-secrets`, and `cnpg-system`). OpenBao owns one shared `ClusterSecretStore`, restricted to the `authentik` and `nextcloud` namespaces.
 
 Each CNPG `Cluster` creates a PostgreSQL server and its application's database. Its `DatabaseRole` declares the application's non-privileged login and gets its password from an ESO-managed Secret. Keeping a separate cluster per app aligns its credentials, storage, backup/restore, upgrades, and resource tuning with that app's lifecycle. Argo CD requires explicit confirmation before pruning either database cluster. One-instance clusters are appropriate for this single-node Minikube setup, not for high availability.
 

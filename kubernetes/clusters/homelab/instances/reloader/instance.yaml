@@ -1,0 +1,7 @@
+---
+application: reloader
+argocd:
+  name: reloader
+  project: platform
+  rolloutGroup: platform
+namespace: reloader

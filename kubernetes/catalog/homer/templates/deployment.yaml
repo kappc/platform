@@ -5,6 +5,8 @@ metadata:
   name: {{ .Release.Name }}
   labels:
     {{- include "homer.labels" . | nindent 4 }}
+  annotations:
+    configmap.reloader.stakater.com/reload: {{ printf "%s-dashboard" .Release.Name | quote }}
 spec:
   replicas: {{ .Values.deployment.replicas }}
   selector:
@@ -14,8 +16,6 @@ spec:
     metadata:
       labels:
         {{- include "homer.labels" . | nindent 8 }}
-      annotations:
-        checksum/dashboard: {{ toYaml .Values.dashboard | sha256sum }}
     spec:
       securityContext:
         runAsNonRoot: true

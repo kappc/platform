@@ -1,0 +1,5 @@
+---
+reloader:
+  reloader:
+    namespaces:
+      - homer
