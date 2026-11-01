@@ -16,18 +16,20 @@ spec:
   clusterResourceWhitelist:
     - group: ""
       kind: Namespace
-    - group: apiextensions.k8s.io
-      kind: CustomResourceDefinition
-    - group: gateway.networking.k8s.io
-      kind: GatewayClass
-    - group: kyverno.io
-      kind: ClusterPolicy
     - group: admissionregistration.k8s.io
       kind: MutatingWebhookConfiguration
     - group: admissionregistration.k8s.io
       kind: ValidatingAdmissionPolicy
     - group: admissionregistration.k8s.io
       kind: ValidatingAdmissionPolicyBinding
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+    - group: gateway.networking.k8s.io
+      kind: GatewayClass
+    - group: kyverno.io
+      kind: ClusterPolicy
+    - group: policies.kyverno.io
+      kind: ValidatingPolicy
     - group: rbac.authorization.k8s.io
       kind: ClusterRole
     - group: rbac.authorization.k8s.io
