@@ -17,6 +17,9 @@ spec:
             type: PathPrefix
             value: {{ .Values.httpRoute.path | quote }}
       backendRefs:
-        - name: {{ .Release.Name }}
+        - group: ""
+          kind: Service
+          name: {{ .Release.Name }}
           port: 80
+          weight: 1
 {{- end }}
