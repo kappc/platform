@@ -15,5 +15,8 @@ spec:
             type: PathPrefix
             value: /
       backendRefs:
-        - name: {{ .Release.Name }}
+        - group: ""
+          kind: Service
+          name: {{ .Release.Name }}
           port: 8080
+          weight: 1

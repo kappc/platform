@@ -1,10 +1,19 @@
 # Kubernetes Platform
 
-This directory contains the GitOps configuration for the `homelab` cluster. Reusable charts are in `catalog/`; cluster inventory, overrides, and Argo CD configuration are in `clusters/homelab/`.
+GitOps configuration for the `homelab` cluster lives here. Reusable Helm charts are in `catalog/`; cluster inventory, instance overrides, and Argo CD configuration are in `clusters/homelab/`.
 
 Chart dependencies are pinned in `Chart.yaml` and `Chart.lock` and pulled from registries; generated chart archives are not committed. Images in platform-owned charts are pinned by tag and digest.
 
-The ApplicationSet creates one Argo CD Application per inventory descriptor. RollingSync deploys `infrastructure`, then `platform`, then `workload`; generated Applications prune resources removed from their charts.
+The Argo CD ApplicationSet creates one Application per inventory descriptor. RollingSync deploys `infrastructure`, then `platform`, then `workload`. Generated Applications prune resources removed from their charts.
+
+## Contents
+
+- [Bootstrap a cluster](#bootstrap)
+- [Deploy and extend applications](#deploy-and-extend-applications)
+- [Kyverno policies](#kyverno-policies)
+- [OpenBao and Nextcloud](#openbao-and-nextcloud)
+- [Access Whoami](#accessing-whoami)
+- [Validate changes](#validation)
 
 ## Bootstrap
 
@@ -83,7 +92,9 @@ The `root` Application recursively loads the AppProjects, ApplicationSet, and it
 
 To upgrade a chart dependency, update its version in the catalog `Chart.yaml`, run `helm dependency update` for that chart, and review and commit the resulting `Chart.lock`. Envoy Gateway CRDs stored in the upstream chart's `crds/` directory need to be upgraded separately; Helm does not upgrade them automatically.
 
-## Inventory Fields and Projects
+## Deploy and extend applications
+
+### Instance descriptors
 
 Each deployment instance groups its descriptor and cluster overrides together:
 
@@ -115,13 +126,21 @@ namespace: whoami
 
 Multiple instances may use the same catalog application with distinct Argo CD names, namespaces, and values. Cluster-specific values are optional; keep them limited to settings that vary by instance. Removing an instance descriptor also removes its Application, and pruning can delete its resources.
 
+### AppProjects
+
 Add an AppProject manifest under `clusters/<cluster>/argocd/projects/` for each project. The ApplicationSet selects the project and rollout group from each descriptor. Keep project source repositories and cluster-scoped resource permissions as narrow as practical; AppProjects are policy boundaries, not namespaces.
 
-The [Kyverno policies catalog chart](./catalog/kyverno-policies/Chart.yaml) wraps the upstream [kyverno-policies chart](https://artifacthub.io/packages/helm/kyverno/kyverno-policies) at the same pinned version as the Kyverno controller. It enables the upstream Baseline Pod Security Standard policies and defines platform policies as individual `ValidatingPolicy` templates in `catalog/kyverno-policies/templates/policies/`. These custom policies report missing resource requests or limits and mutable or untagged images in Audit mode. Review Policy Reporter results before changing the validation action to `Deny`; configure the shared action in the top-level `customPolicies` section of `catalog/kyverno-policies/values.yaml`.
+## Kyverno policies
 
-To add a custom policy, add a separate `ValidatingPolicy` manifest under `catalog/kyverno-policies/templates/policies/`. The upstream PSS policies have their own shared `kyverno-policies.validationFailureAction`; keep both action settings aligned when changing from Audit. The `platform` AppProject permits `ValidatingPolicy` resources.
+The [Kyverno policies catalog chart](./catalog/kyverno-policies/Chart.yaml) wraps the upstream [kyverno-policies chart](https://artifacthub.io/packages/helm/kyverno/kyverno-policies) at the same pinned version as the Kyverno controller. It enables the upstream Baseline Pod Security Standard (PSS) policies and defines platform policies as individual `ValidatingPolicy` templates in `catalog/kyverno-policies/templates/policies/`.
 
-## Nextcloud and Secret Management
+The custom policies report missing resource requests or limits and mutable or untagged images in Audit mode. Review Policy Reporter results before changing validation to `Deny`. Configure the shared action in the top-level `customPolicies` section of `catalog/kyverno-policies/values.yaml`; keep it aligned with the upstream `kyverno-policies.validationFailureAction` used by PSS policies.
+
+To add a policy, add a separate `ValidatingPolicy` manifest under `catalog/kyverno-policies/templates/policies/`. The `platform` AppProject permits `ValidatingPolicy` resources.
+
+## OpenBao and Nextcloud
+
+### Architecture
 
 The homelab inventory installs cert-manager and External Secrets Operator in the `infrastructure` rollout group. OpenBao and the CloudNativePG operator run in the `platform` group, before the Nextcloud `workload`. Operators use their standard namespaces (`cert-manager`, `external-secrets`, and `cnpg-system`). The OpenBao Application owns the shared `ClusterSecretStore`, restricted by its homelab values to the Nextcloud namespace. The Nextcloud workload chart owns its PostgreSQL `Cluster` and `DatabaseRole`, two `ExternalSecret` resources, and HTTPRoute. The `nextcloud-admin` and `nextcloud-db` Kubernetes Secrets are generated from OpenBao; credentials are not stored in Git or Helm values. The DB Secret has just two keys (`username` and `password`), shared by CNPG and Nextcloud.
 
@@ -129,7 +148,21 @@ The CNPG `Cluster` creates the PostgreSQL server and database. `DatabaseRole` is
 
 Use one CNPG `Cluster` per independently managed workload database in that workload's catalog app and namespace. This keeps database credentials, storage, backup/restore, upgrades, and resource tuning aligned with the workload lifecycle. Keep only the CNPG operator as a shared platform service. Sharing a database cluster can be reasonable for tightly coupled applications or very constrained clusters, but requires deliberate database/role separation and couples maintenance and recovery. Argo CD requires explicit confirmation before pruning the Nextcloud database Cluster. A one-instance Cluster is appropriate for this single-node Minikube setup, not for high availability.
 
-OpenBao has persistent single-node Raft storage and uses Kubernetes authentication for External Secrets. Initialize it once; after a pod restart, unseal it again. The OpenBao app remains progressing while it is sealed, holding the platform rollout before Nextcloud.
+OpenBao has persistent single-node Raft storage and uses Kubernetes authentication for External Secrets. Initialize it once; after an OpenBao pod restart, unseal it again. The OpenBao app remains progressing while sealed, holding the platform rollout before Nextcloud.
+
+### Access the OpenBao UI
+
+The OpenBao UI is enabled but its Service is internal-only (`ClusterIP`). After OpenBao is initialized and unsealed, access it locally with:
+
+```sh
+kubectl port-forward -n openbao svc/openbao-ui 8200:8200
+```
+
+Then open `https://localhost:8200/ui/` and sign in with an OpenBao token. Use the trailing slash: `/ui` redirects to `/ui/`. The UI is not exposed through the Gateway.
+
+Use `https://`, not `http://`; an HTTP request to this TLS endpoint returns “Client sent an HTTP request to an HTTPS server.” The certificate is signed by the cluster's private CA, so browsers that do not trust that CA may show a certificate warning.
+
+### Initialize OpenBao and configure External Secrets
 
 For the one-time bootstrap, open a shell in the pod:
 
@@ -164,6 +197,8 @@ bao write auth/kubernetes/role/external-secrets \
 
 The chart grants OpenBao's service account `system:auth-delegator`; leaving `token_reviewer_jwt` and `kubernetes_ca_cert` unset lets it use its projected token and CA.
 
+### Seed Nextcloud credentials
+
 To seed Nextcloud, create a temporary JSON file with mode `0600` on encrypted local storage (never in Git). Use this shape, replacing the password placeholders with unique generated passwords:
 
 ```json
@@ -175,7 +210,9 @@ To seed Nextcloud, create a temporary JSON file with mode `0600` on encrypted lo
 }
 ```
 
-`admin-username` is the Nextcloud web administrator; `db-username` is the PostgreSQL login shared by Nextcloud and CNPG and must be `nextcloud`. Rotate the database password by changing `db-password` in OpenBao; keep the username unchanged. From a second terminal, stream the file into the pod:
+`admin-username` is the Nextcloud web administrator. `db-username` is the PostgreSQL login shared by Nextcloud and CNPG and must be `nextcloud`. Keep the credentials file outside Git and remove both temporary copies after writing it to OpenBao.
+
+From a second terminal, stream the file into the pod:
 
 ```sh
 kubectl exec -i -n openbao openbao-0 -- \
@@ -190,6 +227,8 @@ bao kv put secret/nextcloud @/tmp/nextcloud-secrets.json
 rm /tmp/nextcloud-secrets.json
 ```
 
+### Verify the Nextcloud deployment
+
 Wait for the generated secrets and database before using Nextcloud:
 
 ```sh
@@ -202,7 +241,17 @@ kubectl wait -n nextcloud \
   --for=condition=Ready databaserole.postgresql.cnpg.io/nextcloud-app --timeout=5m
 ```
 
-Nextcloud is available at `http://nextcloud.homelab.test:30080`; map that hostname to the Minikube node address as for Whoami. When rotating the database password in OpenBao, ESO updates the Kubernetes Secret and CNPG reconciles the role; restart the Nextcloud workload afterward so its environment picks up the new password. ESO writes the synced values into ordinary Kubernetes Secrets; External Secrets keeps credentials out of Git but does not itself encrypt Kubernetes API storage. Kubernetes Secrets may be stored unencrypted in etcd unless encryption at rest is configured. This local setup uses Minikube's `standard` hostpath StorageClass, one PostgreSQL instance, and one OpenBao Raft member. It is not highly available, and these volumes are not backups. Configure and test off-cluster backups before storing important data, and provide TLS at the public Gateway before exposing the application beyond a trusted lab network.
+The chart allows up to 10 minutes for startup so the image can complete first-install database setup before Kubernetes applies liveness checks. The CronJob runs as UID/GID 33, matching the `www-data` owner of Nextcloud's shared files.
+
+### Access and rotate credentials
+
+Nextcloud is available at `http://nextcloud.homelab.test:30080`; map that hostname to the Minikube node address as for Whoami. For credential rotation, update the corresponding password in OpenBao and let External Secrets sync it. For the database password, also wait for CNPG to apply the new role password and update Nextcloud's stored database credentials before resuming the CronJob. Change the Nextcloud administrator password through Nextcloud's administration interface after updating its value in OpenBao.
+
+### Security and recovery notes
+
+ESO writes synced values into ordinary Kubernetes Secrets; External Secrets keeps credentials out of Git but does not itself encrypt Kubernetes API storage. Kubernetes Secrets may be stored unencrypted in etcd unless encryption at rest is configured.
+
+This local setup uses Minikube's `standard` hostpath StorageClass, one PostgreSQL instance, and one OpenBao Raft member. It is not highly available, and these volumes are not backups. Configure and test off-cluster backups before storing important data, and provide TLS at the public Gateway before exposing the application beyond a trusted lab network.
 
 ## Accessing Whoami
 
