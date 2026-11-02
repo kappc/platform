@@ -15,15 +15,25 @@ dashboard:
         - name: Authentik
           icon: fas fa-user-shield
           subtitle: Identity and Access
-          url: http://authentik.homelab.test:30080
+          url: http://authentik.homelab.test
+          target: _blank
+        - name: Grafana
+          icon: fas fa-chart-line
+          subtitle: Metrics and Dashboards
+          url: http://grafana.homelab.test
           target: _blank
         - name: Nextcloud
           icon: fas fa-cloud
           subtitle: Files and Collaboration
-          url: http://nextcloud.homelab.test:30080
+          url: http://nextcloud.homelab.test
+          target: _blank
+        - name: Outline
+          icon: fas fa-book
+          subtitle: Notes and Knowledge Base
+          url: http://outline.homelab.test
           target: _blank
         - name: Whoami
           icon: fas fa-info-circle
           subtitle: HTTP Routing Test
-          url: http://whoami.homelab.test:30080
+          url: http://whoami.homelab.test
           target: _blank

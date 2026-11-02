@@ -1,0 +1,10 @@
+---
+apiVersion: v2
+name: outline
+description: Outline knowledge base with CloudNativePG and OpenBao-managed secrets
+type: application
+version: 0.1.0
+dependencies:
+  - name: outline
+    version: 0.9.5
+    repository: https://community-charts.github.io/helm-charts

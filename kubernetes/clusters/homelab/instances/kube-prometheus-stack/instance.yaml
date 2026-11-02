@@ -1,0 +1,7 @@
+---
+application: kube-prometheus-stack
+argocd:
+  name: kube-prometheus-stack
+  project: platform
+  rolloutGroup: platform
+namespace: monitoring

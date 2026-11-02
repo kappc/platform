@@ -31,3 +31,4 @@ envoyProxy:
     type: LoadBalancer
     port: 80
     externalTrafficPolicy: Cluster
+    annotations: {}

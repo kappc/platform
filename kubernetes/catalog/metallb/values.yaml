@@ -1,0 +1,33 @@
+---
+metallb:
+  controller:
+    replicas: 1
+    resources:
+      requests:
+        cpu: 25m
+        memory: 64Mi
+      limits:
+        cpu: 250m
+        memory: 256Mi
+  speaker:
+    frr:
+      enabled: false
+    resources:
+      requests:
+        cpu: 25m
+        memory: 64Mi
+      limits:
+        cpu: 250m
+        memory: 256Mi
+  frrk8s:
+    enabled: false
+
+addressPool:
+  enabled: false
+  name: default
+  addresses: []
+
+l2Advertisement:
+  enabled: false
+  name: default
+  interfaces: []

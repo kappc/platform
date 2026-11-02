@@ -11,6 +11,10 @@ spec:
       envoyService:
         type: {{ .Values.envoyProxy.service.type }}
         externalTrafficPolicy: {{ .Values.envoyProxy.service.externalTrafficPolicy }}
+        {{- with .Values.envoyProxy.service.annotations }}
+        annotations:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         {{- if .Values.envoyProxy.service.nodePort }}
         patch:
           type: StrategicMerge

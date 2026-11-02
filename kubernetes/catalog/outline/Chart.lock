@@ -1,0 +1,6 @@
+dependencies:
+- name: outline
+  repository: https://community-charts.github.io/helm-charts
+  version: 0.9.5
+digest: sha256:94ac84fd3afcd4fd3bb88593f25ccfb63e641e27f5617074a220e167f2ea6a86
+generated: "2026-11-01T22:00:54.140718269+01:00"

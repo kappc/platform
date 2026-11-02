@@ -8,4 +8,6 @@ secretStore:
   enabled: true
   allowedNamespaces:
     - authentik
+    - monitoring
     - nextcloud
+    - outline

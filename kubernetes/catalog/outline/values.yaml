@@ -1,0 +1,69 @@
+---
+database:
+  image:
+    repository: ghcr.io/cloudnative-pg/postgresql
+    tag: "17.7"
+    digest: sha256:dab846a58e8ca3c8872584ab2225ee93fb9e659a87c52e163fefae9275b46f51
+  storage:
+    size: 8Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+
+outline:
+  url: http://outline.homelab.test
+  secretKeyExternalSecret:
+    name: outline-config
+    key: secret-key
+  utilsSecretExternalSecret:
+    name: outline-config
+    key: utils-secret
+  ingress:
+    enabled: false
+  postgresql:
+    enabled: false
+  externalPostgresql:
+    host: outline-db-rw
+    username: outline
+    existingSecret: outline-db
+    passwordSecretKey: password
+    database: outline
+  redis:
+    enabled: true
+    architecture: standalone
+    auth:
+      enabled: true
+      existingSecret: outline-redis
+      existingSecretPasswordKey: redis-password
+    master:
+      persistence:
+        enabled: false
+  fileStorage:
+    mode: local
+    local:
+      persistence:
+        enabled: true
+        size: 8Gi
+  auth:
+    oidc:
+      enabled: true
+      clientId: outline
+      existingSecret:
+        name: outline-config
+        clientSecretKey: oidc-client-secret
+  web:
+    forceHttps: false
+  service:
+    port: 3000
+
+httpRoute:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: gateway
+      namespace: envoy-gateway-system
+      sectionName: http

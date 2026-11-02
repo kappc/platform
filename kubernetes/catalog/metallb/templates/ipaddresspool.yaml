@@ -1,0 +1,11 @@
+---
+{{- if .Values.addressPool.enabled }}
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: {{ .Values.addressPool.name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  addresses:
+    {{- required "addressPool.addresses must contain one or more ranges" .Values.addressPool.addresses | toYaml | nindent 4 }}
+{{- end }}

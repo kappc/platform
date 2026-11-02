@@ -1,0 +1,12 @@
+---
+addressPool:
+  enabled: true
+  name: default
+  addresses:
+    - 192.168.49.240-192.168.49.250
+
+l2Advertisement:
+  enabled: true
+  name: default
+  interfaces:
+    - eth0

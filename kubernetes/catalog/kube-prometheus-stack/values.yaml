@@ -1,0 +1,31 @@
+---
+kube-prometheus-stack:
+  grafana:
+    admin:
+      existingSecret: grafana-admin
+      userKey: admin-user
+      passwordKey: admin-password
+    persistence:
+      enabled: true
+      size: 2Gi
+  prometheus:
+    prometheusSpec:
+      retention: 7d
+      retentionSize: 6GB
+      storageSpec:
+        volumeClaimTemplate:
+          spec:
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: 8Gi
+
+httpRoute:
+  enabled: false
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: gateway
+      namespace: envoy-gateway-system
+      sectionName: http

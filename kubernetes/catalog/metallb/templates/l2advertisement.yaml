@@ -1,0 +1,13 @@
+---
+{{- if .Values.l2Advertisement.enabled }}
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: {{ .Values.l2Advertisement.name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  ipAddressPools:
+    - {{ .Values.addressPool.name }}
+  interfaces:
+    {{- required "l2Advertisement.interfaces must contain one or more interfaces" .Values.l2Advertisement.interfaces | toYaml | nindent 4 }}
+{{- end }}

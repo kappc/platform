@@ -1,0 +1,7 @@
+---
+application: metallb
+argocd:
+  name: metallb
+  project: platform
+  rolloutGroup: infrastructure
+namespace: metallb-system

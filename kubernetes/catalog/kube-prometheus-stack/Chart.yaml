@@ -1,0 +1,10 @@
+---
+apiVersion: v2
+name: kube-prometheus-stack
+description: Prometheus Operator monitoring stack with Grafana
+type: application
+version: 0.1.0
+dependencies:
+  - name: kube-prometheus-stack
+    version: 92.17.0
+    repository: https://prometheus-community.github.io/helm-charts
