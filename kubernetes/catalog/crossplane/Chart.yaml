@@ -1,0 +1,10 @@
+---
+apiVersion: v2
+name: crossplane
+description: Crossplane core control plane
+type: application
+version: 0.1.0
+dependencies:
+  - name: crossplane
+    version: 2.4.3
+    repository: https://charts.crossplane.io/stable

@@ -1,0 +1,9 @@
+---
+crossplane:
+  replicas: 1
+  provider:
+    packages: []
+  configuration:
+    packages: []
+  function:
+    packages: []

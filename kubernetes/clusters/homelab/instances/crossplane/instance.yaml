@@ -1,0 +1,7 @@
+---
+application: crossplane
+argocd:
+  name: crossplane
+  project: platform
+  rolloutGroup: platform
+namespace: crossplane-system

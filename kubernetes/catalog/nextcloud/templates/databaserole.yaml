@@ -9,11 +9,6 @@ spec:
     name: {{ printf "%s-db" .Release.Name }}
   name: {{ .Release.Name }}
   login: true
-  superuser: false
-  createdb: false
-  createrole: false
-  replication: false
-  bypassrls: false
   inherit: true
   passwordSecret:
     name: {{ printf "%s-db" .Release.Name }}
