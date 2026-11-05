@@ -11,7 +11,7 @@ spec:
     - fromEntities:
         - host
         - remote-node
-      fromEndpoints:
+    - fromEndpoints:
         - {}
     {{- if .Values.networkPolicy.port }}
     - fromEndpoints:
