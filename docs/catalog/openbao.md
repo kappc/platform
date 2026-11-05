@@ -6,6 +6,8 @@
   - [Dependencies](#dependencies)
   - [Configuration](#configuration)
   - [Setup](#setup)
+    - [Seed Application Secrets](#seed-application-secrets)
+    - [Access the Web UI](#access-the-web-ui)
 
 ## Overview
 
