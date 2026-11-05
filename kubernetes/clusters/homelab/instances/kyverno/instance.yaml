@@ -1,8 +1,7 @@
 ---
 application: kyverno
 argocd:
-  name: kyverno
-  project: platform
+  project: infrastructure
   rolloutGroup: infrastructure
   ignoreDifferences:
     - group: apiextensions.k8s.io

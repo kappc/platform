@@ -1,3 +1,4 @@
+{{- if and .Values.httpRoute .Values.httpRoute.enabled }}
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
@@ -6,17 +7,22 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   parentRefs:
-    {{- toYaml .Values.httpRoute.parentRefs | nindent 4 }}
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: gateway
+      namespace: envoy-gateway-system
+      sectionName: {{ .Values.httpRoute.listener }}
   hostnames:
-    - {{ required "set httpRoute.hostname in the instance values.yaml" .Values.httpRoute.hostname | quote }}
+    - {{ required "httpRoute.hostname is required" .Values.httpRoute.hostname | quote }}
   rules:
     - matches:
         - path:
             type: PathPrefix
-            value: /
+            value: {{ .Values.httpRoute.path | quote }}
       backendRefs:
         - group: ""
           kind: Service
-          name: {{ .Release.Name }}
-          port: {{ .Values.outline.service.port }}
+          name: {{ .Values.httpRoute.service | default .Release.Name }}
+          port: {{ .Values.httpRoute.port }}
           weight: 1
+{{- end }}

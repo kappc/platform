@@ -1,0 +1,391 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "global": {
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "httpRoute": {
+      "properties": {
+        "enabled": {
+          "default": true,
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "listener": {
+          "default": "http",
+          "title": "listener",
+          "type": "string"
+        },
+        "path": {
+          "default": "/",
+          "title": "path",
+          "type": "string"
+        },
+        "port": {
+          "default": 80,
+          "title": "port",
+          "type": "integer"
+        },
+        "service": {
+          "default": "loki-gateway",
+          "title": "service",
+          "type": "string"
+        }
+      },
+      "required": [
+        "enabled",
+        "listener",
+        "path",
+        "port",
+        "service"
+      ],
+      "title": "httpRoute",
+      "type": "object"
+    },
+    "loki": {
+      "properties": {
+        "backend": {
+          "properties": {
+            "replicas": {
+              "default": 0,
+              "title": "replicas",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "replicas"
+          ],
+          "title": "backend",
+          "type": "object"
+        },
+        "chunksCache": {
+          "properties": {
+            "enabled": {
+              "default": false,
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "enabled"
+          ],
+          "title": "chunksCache",
+          "type": "object"
+        },
+        "deploymentMode": {
+          "default": "SingleBinary",
+          "title": "deploymentMode",
+          "type": "string"
+        },
+        "loki": {
+          "properties": {
+            "auth_enabled": {
+              "default": false,
+              "title": "auth_enabled",
+              "type": "boolean"
+            },
+            "commonConfig": {
+              "properties": {
+                "replication_factor": {
+                  "default": 1,
+                  "title": "replication_factor",
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "replication_factor"
+              ],
+              "title": "commonConfig",
+              "type": "object"
+            },
+            "schemaConfig": {
+              "properties": {
+                "configs": {
+                  "items": {
+                    "anyOf": [
+                      {
+                        "properties": {
+                          "from": {
+                            "default": "2024-04-01",
+                            "title": "from",
+                            "type": "string"
+                          },
+                          "index": {
+                            "properties": {
+                              "period": {
+                                "default": "24h",
+                                "title": "period",
+                                "type": "string"
+                              },
+                              "prefix": {
+                                "default": "index_",
+                                "title": "prefix",
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "prefix",
+                              "period"
+                            ],
+                            "title": "index",
+                            "type": "object"
+                          },
+                          "object_store": {
+                            "default": "filesystem",
+                            "title": "object_store",
+                            "type": "string"
+                          },
+                          "schema": {
+                            "default": "v13",
+                            "title": "schema",
+                            "type": "string"
+                          },
+                          "store": {
+                            "default": "tsdb",
+                            "title": "store",
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "from",
+                          "store",
+                          "object_store",
+                          "schema",
+                          "index"
+                        ],
+                        "type": "object"
+                      }
+                    ],
+                    "required": []
+                  },
+                  "title": "configs",
+                  "type": "array"
+                }
+              },
+              "required": [
+                "configs"
+              ],
+              "title": "schemaConfig",
+              "type": "object"
+            },
+            "storage": {
+              "properties": {
+                "type": {
+                  "default": "filesystem",
+                  "title": "type",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "type"
+              ],
+              "title": "storage",
+              "type": "object"
+            }
+          },
+          "required": [
+            "auth_enabled",
+            "commonConfig",
+            "storage",
+            "schemaConfig"
+          ],
+          "title": "loki",
+          "type": "object"
+        },
+        "lokiCanary": {
+          "properties": {
+            "enabled": {
+              "default": false,
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "enabled"
+          ],
+          "title": "lokiCanary",
+          "type": "object"
+        },
+        "read": {
+          "properties": {
+            "replicas": {
+              "default": 0,
+              "title": "replicas",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "replicas"
+          ],
+          "title": "read",
+          "type": "object"
+        },
+        "resultsCache": {
+          "properties": {
+            "enabled": {
+              "default": false,
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "enabled"
+          ],
+          "title": "resultsCache",
+          "type": "object"
+        },
+        "singleBinary": {
+          "properties": {
+            "persistence": {
+              "properties": {
+                "enabled": {
+                  "default": true,
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "size": {
+                  "default": "10Gi",
+                  "title": "size",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "enabled",
+                "size"
+              ],
+              "title": "persistence",
+              "type": "object"
+            },
+            "replicas": {
+              "default": 1,
+              "title": "replicas",
+              "type": "integer"
+            },
+            "resources": {
+              "properties": {
+                "limits": {
+                  "properties": {
+                    "cpu": {
+                      "default": "1",
+                      "title": "cpu",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "1Gi",
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "cpu",
+                    "memory"
+                  ],
+                  "title": "limits",
+                  "type": "object"
+                },
+                "requests": {
+                  "properties": {
+                    "cpu": {
+                      "default": "100m",
+                      "title": "cpu",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "256Mi",
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "cpu",
+                    "memory"
+                  ],
+                  "title": "requests",
+                  "type": "object"
+                }
+              },
+              "required": [
+                "requests",
+                "limits"
+              ],
+              "title": "resources",
+              "type": "object"
+            }
+          },
+          "required": [
+            "replicas",
+            "persistence",
+            "resources"
+          ],
+          "title": "singleBinary",
+          "type": "object"
+        },
+        "test": {
+          "properties": {
+            "enabled": {
+              "default": false,
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "enabled"
+          ],
+          "title": "test",
+          "type": "object"
+        },
+        "write": {
+          "properties": {
+            "replicas": {
+              "default": 0,
+              "title": "replicas",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "replicas"
+          ],
+          "title": "write",
+          "type": "object"
+        }
+      },
+      "required": [
+        "deploymentMode",
+        "loki",
+        "singleBinary",
+        "read",
+        "write",
+        "backend",
+        "chunksCache",
+        "resultsCache",
+        "lokiCanary",
+        "test"
+      ],
+      "title": "loki",
+      "type": "object"
+    },
+    "networkPolicy": {
+      "properties": {
+        "enabled": {
+          "default": false,
+          "title": "enabled",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "enabled"
+      ],
+      "title": "networkPolicy",
+      "type": "object"
+    }
+  },
+  "required": [
+    "httpRoute",
+    "networkPolicy",
+    "loki"
+  ],
+  "type": "object"
+}

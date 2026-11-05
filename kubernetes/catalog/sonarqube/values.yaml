@@ -1,0 +1,88 @@
+---
+database:
+  enabled: true
+  image:
+    repository: ghcr.io/cloudnative-pg/postgresql
+    tag: "17.7"
+    digest: sha256:dab846a58e8ca3c8872584ab2225ee93fb9e659a87c52e163fefae9275b46f51
+  storage:
+    size: 8Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+
+httpRoute:
+  enabled: true
+  listener: http
+  path: /
+  port: 9000
+
+networkPolicy:
+  enabled: true
+  port: 9000
+
+externalSecrets:
+  - name: sonarqube-config
+    data:
+      monitoring-passcode: monitoring-passcode
+  - name: sonarqube-admin
+    data:
+      password: admin-password
+      currentPassword: admin-current-password
+
+sonarqube:
+  fullnameOverride: sonarqube
+  deploymentType: Deployment
+  community:
+    enabled: true
+  # The chart derives a label from `image.tag`, which cannot carry a digest; this pins the pulled image.
+  global:
+    azure:
+      images:
+        sonarqube:
+          registry: docker.io
+          image: sonarqube
+          tag: 26.9.0.129388-community@sha256:c0f1160bccfa435db4168c2d7df69af3c3ea7bfeb87395613014048fb33a68c1
+  annotations:
+    reloader.stakater.com/auto: "true"
+  serviceAccount:
+    create: true
+  initSysctl:
+    enabled: false
+  initFs:
+    enabled: false
+  persistence:
+    enabled: true
+    size: 10Gi
+  resources:
+    requests:
+      cpu: 400m
+      memory: 4096M
+      ephemeral-storage: 1536M
+    limits:
+      cpu: "2"
+      memory: 8192M
+      ephemeral-storage: 8192M
+  jdbcOverwrite:
+    enabled: true
+    jdbcUrl: jdbc:postgresql://sonarqube-db-rw:5432/sonarqube
+    jdbcUsername: sonarqube
+    jdbcSecretName: sonarqube-db
+    jdbcSecretPasswordKey: password
+  monitoringPasscodeSecretName: sonarqube-config
+  monitoringPasscodeSecretKey: monitoring-passcode
+  setAdminPassword:
+    passwordSecretName: sonarqube-admin
+    resources:
+      requests:
+        cpu: 10m
+        memory: 32Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi
+  tests:
+    enabled: false

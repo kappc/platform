@@ -7,11 +7,3 @@ outline:
   auth:
     oidc:
       authUri: http://authentik.homelab.test/application/o/authorize/
-      tokenUri: http://authentik-server.authentik.svc.cluster.local:80/application/o/token/
-      userInfoUri: http://authentik-server.authentik.svc.cluster.local:80/application/o/userinfo/
-      displayName: Authentik
-      usernameClaim: preferred_username
-      scopes:
-        - openid
-        - profile
-        - email

@@ -1,0 +1,109 @@
+{{- $hostname := required "httpRoute.hostname is required" .Values.httpRoute.hostname -}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "mail-archiver.labels" . | nindent 4 }}
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "mail-archiver.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "mail-archiver.labels" . | nindent 8 }}
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1654
+        runAsGroup: 1654
+        fsGroup: 1654
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: mail-archiver
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}@{{ .Values.image.digest }}"
+          ports:
+            - name: http
+              containerPort: 5000
+              protocol: TCP
+          env:
+            {{- range $name, $value := .Values.env }}
+            - name: {{ $name }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- with $hostname }}
+            - name: AllowedHosts
+              value: {{ . | quote }}
+            {{- end }}
+          envFrom:
+            - secretRef:
+                name: {{ printf "%s-config" .Release.Name }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1654
+            runAsGroup: 1654
+            capabilities:
+              drop:
+                - ALL
+          startupProbe:
+            httpGet:
+              path: /
+              port: http
+              {{- with $hostname }}
+              httpHeaders:
+                - name: Host
+                  value: {{ . | quote }}
+              {{- end }}
+            periodSeconds: 10
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+              {{- with $hostname }}
+              httpHeaders:
+                - name: Host
+                  value: {{ . | quote }}
+              {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+              {{- with $hostname }}
+              httpHeaders:
+                - name: Host
+                  value: {{ . | quote }}
+              {{- end }}
+          volumeMounts:
+            - name: data-protection-keys
+              mountPath: /app/DataProtection-Keys
+            - name: tmp
+              mountPath: /tmp
+            - name: uploads
+              mountPath: /app/uploads
+            - name: exports
+              mountPath: /app/exports
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: data-protection-keys
+          persistentVolumeClaim:
+            claimName: {{ printf "%s-keys" .Release.Name }}
+        - name: tmp
+          emptyDir: {}
+        - name: uploads
+          emptyDir: {}
+        - name: exports
+          emptyDir: {}

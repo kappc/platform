@@ -1,7 +1,6 @@
 ---
 application: authentik
 argocd:
-  name: authentik
   project: platform
   rolloutGroup: platform
 namespace: authentik

@@ -1,7 +1,7 @@
 ---
 apiVersion: v2
 name: kyverno-policies
-description: Baseline Pod Security and custom Kyverno policies
+description: Kyverno Pod Security and custom policies
 type: application
 version: 0.2.3
 dependencies:

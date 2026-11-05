@@ -1,7 +1,6 @@
 ---
 application: metallb
 argocd:
-  name: metallb
-  project: platform
+  project: infrastructure
   rolloutGroup: infrastructure
 namespace: metallb-system

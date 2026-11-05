@@ -1,11 +1,5 @@
 ---
-openbao:
-  server:
-    dataStorage:
-      storageClass: standard
-
 secretStore:
-  enabled: true
   allowedNamespaces:
     - authentik
     - monitoring

@@ -1,0 +1,97 @@
+---
+database:
+  enabled: true
+  image:
+    repository: ghcr.io/cloudnative-pg/postgresql
+    tag: "17.7"
+    digest: sha256:dab846a58e8ca3c8872584ab2225ee93fb9e659a87c52e163fefae9275b46f51
+  storage:
+    size: 8Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+
+httpRoute:
+  enabled: true
+  listener: http
+  path: /
+  port: 80
+
+networkPolicy:
+  enabled: true
+  port: 8080
+
+externalSecrets:
+  - name: firefly-iii-config
+    data:
+      APP_KEY: app-key
+      DB_PASSWORD: db-password
+      STATIC_CRON_TOKEN: cron-token
+
+firefly-iii:
+  image:
+    repository: fireflyiii/core
+    # renovate: versioning=regex:^version-(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)$
+    tag: version-6.7.9@sha256:d51ab6a3a7b91a5c892441578e0da7f2935f84f36bd1151fc3833acc6e060871
+  podAnnotations:
+    reloader.stakater.com/auto: "true"
+  podSecurityContext:
+    fsGroup: 33
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    runAsNonRoot: true
+    runAsUser: 33
+    runAsGroup: 33
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: "1"
+      memory: 512Mi
+  persistence:
+    storage: 2Gi
+  config:
+    existingSecret: firefly-iii-config
+    env:
+      DB_HOST: firefly-iii-db-rw
+      DB_CONNECTION: pgsql
+      DB_PORT: "5432"
+      DB_DATABASE: firefly-iii
+      DB_USERNAME: firefly-iii
+  cronjob:
+    enabled: true
+    auth:
+      existingSecret: firefly-iii-config
+      secretKey: STATIC_CRON_TOKEN
+    image:
+      repository: curlimages/curl
+      tag: 8.12.0@sha256:3dfa70a646c5d03ddf0e7c0ff518a5661e95b8bcbc82079f0fb7453a96eaae35
+    podSecurityContext:
+      seccompProfile:
+        type: RuntimeDefault
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 100
+      runAsGroup: 101
+    resources:
+      requests:
+        cpu: 10m
+        memory: 16Mi
+      limits:
+        cpu: 100m
+        memory: 64Mi

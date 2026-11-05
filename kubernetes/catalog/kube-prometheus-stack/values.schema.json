@@ -1,0 +1,278 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "externalSecrets": {
+      "items": {
+        "anyOf": [
+          {
+            "properties": {
+              "data": {
+                "properties": {
+                  "admin-password": {
+                    "default": "grafana-admin-password",
+                    "title": "admin-password",
+                    "type": "string"
+                  },
+                  "admin-user": {
+                    "default": "grafana-admin-username",
+                    "title": "admin-user",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "admin-user",
+                  "admin-password"
+                ],
+                "title": "data",
+                "type": "object"
+              },
+              "name": {
+                "default": "grafana-admin",
+                "title": "name",
+                "type": "string"
+              },
+              "remoteKey": {
+                "default": "monitoring",
+                "title": "remoteKey",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "remoteKey",
+              "data"
+            ],
+            "type": "object"
+          }
+        ],
+        "required": []
+      },
+      "title": "externalSecrets",
+      "type": "array"
+    },
+    "global": {
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "httpRoute": {
+      "properties": {
+        "enabled": {
+          "default": true,
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "listener": {
+          "default": "http",
+          "title": "listener",
+          "type": "string"
+        },
+        "path": {
+          "default": "/",
+          "title": "path",
+          "type": "string"
+        },
+        "port": {
+          "default": 80,
+          "title": "port",
+          "type": "integer"
+        },
+        "service": {
+          "default": "kube-prometheus-stack-grafana",
+          "title": "service",
+          "type": "string"
+        }
+      },
+      "required": [
+        "enabled",
+        "listener",
+        "path",
+        "port",
+        "service"
+      ],
+      "title": "httpRoute",
+      "type": "object"
+    },
+    "kube-prometheus-stack": {
+      "properties": {
+        "grafana": {
+          "properties": {
+            "admin": {
+              "properties": {
+                "existingSecret": {
+                  "default": "grafana-admin",
+                  "title": "existingSecret",
+                  "type": "string"
+                },
+                "passwordKey": {
+                  "default": "admin-password",
+                  "title": "passwordKey",
+                  "type": "string"
+                },
+                "userKey": {
+                  "default": "admin-user",
+                  "title": "userKey",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "existingSecret",
+                "userKey",
+                "passwordKey"
+              ],
+              "title": "admin",
+              "type": "object"
+            },
+            "persistence": {
+              "properties": {
+                "enabled": {
+                  "default": true,
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "size": {
+                  "default": "2Gi",
+                  "title": "size",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "enabled",
+                "size"
+              ],
+              "title": "persistence",
+              "type": "object"
+            }
+          },
+          "required": [
+            "admin",
+            "persistence"
+          ],
+          "title": "grafana",
+          "type": "object"
+        },
+        "prometheus": {
+          "properties": {
+            "prometheusSpec": {
+              "properties": {
+                "retention": {
+                  "default": "7d",
+                  "title": "retention",
+                  "type": "string"
+                },
+                "retentionSize": {
+                  "default": "6GB",
+                  "title": "retentionSize",
+                  "type": "string"
+                },
+                "storageSpec": {
+                  "properties": {
+                    "volumeClaimTemplate": {
+                      "properties": {
+                        "spec": {
+                          "properties": {
+                            "accessModes": {
+                              "items": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  }
+                                ],
+                                "required": []
+                              },
+                              "title": "accessModes",
+                              "type": "array"
+                            },
+                            "resources": {
+                              "properties": {
+                                "requests": {
+                                  "properties": {
+                                    "storage": {
+                                      "default": "8Gi",
+                                      "title": "storage",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "storage"
+                                  ],
+                                  "title": "requests",
+                                  "type": "object"
+                                }
+                              },
+                              "required": [
+                                "requests"
+                              ],
+                              "title": "resources",
+                              "type": "object"
+                            }
+                          },
+                          "required": [
+                            "accessModes",
+                            "resources"
+                          ],
+                          "title": "spec",
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "spec"
+                      ],
+                      "title": "volumeClaimTemplate",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "volumeClaimTemplate"
+                  ],
+                  "title": "storageSpec",
+                  "type": "object"
+                }
+              },
+              "required": [
+                "retention",
+                "retentionSize",
+                "storageSpec"
+              ],
+              "title": "prometheusSpec",
+              "type": "object"
+            }
+          },
+          "required": [
+            "prometheusSpec"
+          ],
+          "title": "prometheus",
+          "type": "object"
+        }
+      },
+      "required": [
+        "grafana",
+        "prometheus"
+      ],
+      "title": "kube-prometheus-stack",
+      "type": "object"
+    },
+    "networkPolicy": {
+      "properties": {
+        "enabled": {
+          "default": false,
+          "title": "enabled",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "enabled"
+      ],
+      "title": "networkPolicy",
+      "type": "object"
+    }
+  },
+  "required": [
+    "httpRoute",
+    "networkPolicy",
+    "externalSecrets",
+    "kube-prometheus-stack"
+  ],
+  "type": "object"
+}

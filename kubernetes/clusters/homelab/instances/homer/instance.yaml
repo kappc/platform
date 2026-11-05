@@ -1,7 +1,6 @@
 ---
 application: homer
 argocd:
-  name: homer
   project: platform
   rolloutGroup: platform
 namespace: homer

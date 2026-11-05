@@ -1,9 +1,9 @@
 ---
 apiVersion: v2
 name: outline
-description: Outline knowledge base with CloudNativePG and OpenBao-managed secrets
+description: Outline knowledge base
 type: application
-version: 0.1.0
+version: 0.2.0
 dependencies:
   - name: outline
     version: 0.9.5

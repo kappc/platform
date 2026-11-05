@@ -1,0 +1,7 @@
+---
+excludedNamespaces:
+  - kube-system
+
+sameNamespace: []
+
+allowRules: []

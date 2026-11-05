@@ -1,0 +1,367 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "global": {
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "openbao": {
+      "properties": {
+        "global": {
+          "properties": {
+            "tlsDisable": {
+              "default": false,
+              "title": "tlsDisable",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "tlsDisable"
+          ],
+          "title": "global",
+          "type": "object"
+        },
+        "injector": {
+          "properties": {
+            "enabled": {
+              "default": false,
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "enabled"
+          ],
+          "title": "injector",
+          "type": "object"
+        },
+        "server": {
+          "properties": {
+            "affinity": {
+              "default": "",
+              "title": "affinity",
+              "type": "string"
+            },
+            "dataStorage": {
+              "properties": {
+                "size": {
+                  "default": "5Gi",
+                  "title": "size",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "size"
+              ],
+              "title": "dataStorage",
+              "type": "object"
+            },
+            "ha": {
+              "properties": {
+                "apiAddr": {
+                  "default": "https://openbao.openbao.svc:8200",
+                  "title": "apiAddr",
+                  "type": "string"
+                },
+                "disruptionBudget": {
+                  "properties": {
+                    "enabled": {
+                      "default": false,
+                      "title": "enabled",
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "enabled"
+                  ],
+                  "title": "disruptionBudget",
+                  "type": "object"
+                },
+                "enabled": {
+                  "default": true,
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "raft": {
+                  "properties": {
+                    "config": {
+                      "default": "ui = true\n\nlistener \"tcp\" {\n  tls_disable = 0\n  address = \"[::]:8200\"\n  cluster_address = \"[::]:8201\"\n  tls_cert_file = \"/openbao/tls/tls.crt\"\n  tls_key_file = \"/openbao/tls/tls.key\"\n}\n\nstorage \"raft\" {\n  path = \"/openbao/data\"\n}\n\nservice_registration \"kubernetes\" {}\n",
+                      "title": "config",
+                      "type": "string"
+                    },
+                    "enabled": {
+                      "default": true,
+                      "title": "enabled",
+                      "type": "boolean"
+                    },
+                    "setNodeId": {
+                      "default": true,
+                      "title": "setNodeId",
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "enabled",
+                    "setNodeId",
+                    "config"
+                  ],
+                  "title": "raft",
+                  "type": "object"
+                },
+                "replicas": {
+                  "default": 1,
+                  "title": "replicas",
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "enabled",
+                "replicas",
+                "apiAddr",
+                "disruptionBudget",
+                "raft"
+              ],
+              "title": "ha",
+              "type": "object"
+            },
+            "resources": {
+              "properties": {
+                "limits": {
+                  "properties": {
+                    "cpu": {
+                      "default": "500m",
+                      "title": "cpu",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "512Mi",
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "cpu",
+                    "memory"
+                  ],
+                  "title": "limits",
+                  "type": "object"
+                },
+                "requests": {
+                  "properties": {
+                    "cpu": {
+                      "default": "100m",
+                      "title": "cpu",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "256Mi",
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "cpu",
+                    "memory"
+                  ],
+                  "title": "requests",
+                  "type": "object"
+                }
+              },
+              "required": [
+                "requests",
+                "limits"
+              ],
+              "title": "resources",
+              "type": "object"
+            },
+            "volumeMounts": {
+              "items": {
+                "anyOf": [
+                  {
+                    "properties": {
+                      "mountPath": {
+                        "default": "/openbao/tls",
+                        "title": "mountPath",
+                        "type": "string"
+                      },
+                      "name": {
+                        "default": "tls",
+                        "title": "name",
+                        "type": "string"
+                      },
+                      "readOnly": {
+                        "default": true,
+                        "title": "readOnly",
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "mountPath",
+                      "readOnly"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "mountPath": {
+                        "default": "/openbao/ca",
+                        "title": "mountPath",
+                        "type": "string"
+                      },
+                      "name": {
+                        "default": "ca",
+                        "title": "name",
+                        "type": "string"
+                      },
+                      "readOnly": {
+                        "default": true,
+                        "title": "readOnly",
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "mountPath",
+                      "readOnly"
+                    ],
+                    "type": "object"
+                  }
+                ],
+                "required": []
+              },
+              "title": "volumeMounts",
+              "type": "array"
+            },
+            "volumes": {
+              "items": {
+                "anyOf": [
+                  {
+                    "properties": {
+                      "name": {
+                        "default": "tls",
+                        "title": "name",
+                        "type": "string"
+                      },
+                      "secret": {
+                        "properties": {
+                          "secretName": {
+                            "default": "openbao-tls",
+                            "title": "secretName",
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "secretName"
+                        ],
+                        "title": "secret",
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "secret"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "name": {
+                        "default": "ca",
+                        "title": "name",
+                        "type": "string"
+                      },
+                      "secret": {
+                        "properties": {
+                          "secretName": {
+                            "default": "openbao-ca",
+                            "title": "secretName",
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "secretName"
+                        ],
+                        "title": "secret",
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "secret"
+                    ],
+                    "type": "object"
+                  }
+                ],
+                "required": []
+              },
+              "title": "volumes",
+              "type": "array"
+            }
+          },
+          "required": [
+            "affinity",
+            "dataStorage",
+            "ha",
+            "resources",
+            "volumes",
+            "volumeMounts"
+          ],
+          "title": "server",
+          "type": "object"
+        },
+        "ui": {
+          "properties": {
+            "enabled": {
+              "default": true,
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "enabled"
+          ],
+          "title": "ui",
+          "type": "object"
+        }
+      },
+      "required": [
+        "global",
+        "injector",
+        "server",
+        "ui"
+      ],
+      "title": "openbao",
+      "type": "object"
+    },
+    "secretStore": {
+      "properties": {
+        "allowedNamespaces": {
+          "items": {
+            "required": []
+          },
+          "title": "allowedNamespaces",
+          "type": "array"
+        },
+        "enabled": {
+          "default": true,
+          "title": "enabled",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "enabled",
+        "allowedNamespaces"
+      ],
+      "title": "secretStore",
+      "type": "object"
+    }
+  },
+  "required": [
+    "openbao",
+    "secretStore"
+  ],
+  "type": "object"
+}

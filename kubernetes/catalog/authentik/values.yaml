@@ -1,5 +1,6 @@
 ---
 database:
+  enabled: true
   image:
     repository: ghcr.io/cloudnative-pg/postgresql
     tag: "17.7"
@@ -14,6 +15,26 @@ database:
       cpu: "1"
       memory: 1Gi
 
+httpRoute:
+  enabled: true
+  listener: http
+  path: /
+  port: 80
+  service: authentik-server
+
+networkPolicy:
+  enabled: true
+  port: 9000
+  allow:
+    - outline
+
+externalSecrets:
+  - name: authentik-config
+    data:
+      AUTHENTIK_SECRET_KEY: secret-key
+      AUTHENTIK_POSTGRESQL__PASSWORD: db-password
+      AUTHENTIK_BOOTSTRAP_PASSWORD: bootstrap-password
+
 authentik:
   authentik:
     existingSecret:
@@ -27,15 +48,17 @@ authentik:
       - name: AUTHENTIK_POSTGRESQL__USER
         value: authentik
   server:
-    route:
-      main:
-        enabled: true
-        parentRefs:
-          - group: gateway.networking.k8s.io
-            kind: Gateway
-            name: gateway
-            namespace: envoy-gateway-system
-            sectionName: http
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+      runAsGroup: 1000
+      seccompProfile:
+        type: RuntimeDefault
+    containerSecurityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
     resources:
       requests:
         cpu: 100m
@@ -44,6 +67,17 @@ authentik:
         cpu: "1"
         memory: 1Gi
   worker:
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+      runAsGroup: 1000
+      seccompProfile:
+        type: RuntimeDefault
+    containerSecurityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
     resources:
       requests:
         cpu: 100m

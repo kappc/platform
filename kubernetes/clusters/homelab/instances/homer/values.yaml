@@ -5,9 +5,6 @@ httpRoute:
 dashboard:
   title: Homelab
   subtitle: Platform Services
-  header: true
-  footer: false
-  theme: default
   services:
     - name: Applications
       icon: fas fa-cloud

@@ -1,0 +1,683 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "database": {
+      "properties": {
+        "enabled": {
+          "default": true,
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "image": {
+          "properties": {
+            "digest": {
+              "default": "sha256:dab846a58e8ca3c8872584ab2225ee93fb9e659a87c52e163fefae9275b46f51",
+              "title": "digest",
+              "type": "string"
+            },
+            "repository": {
+              "default": "ghcr.io/cloudnative-pg/postgresql",
+              "title": "repository",
+              "type": "string"
+            },
+            "tag": {
+              "default": "17.7",
+              "title": "tag",
+              "type": "string"
+            }
+          },
+          "required": [
+            "repository",
+            "tag",
+            "digest"
+          ],
+          "title": "image",
+          "type": "object"
+        },
+        "resources": {
+          "properties": {
+            "limits": {
+              "properties": {
+                "cpu": {
+                  "default": "1",
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "1Gi",
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "cpu",
+                "memory"
+              ],
+              "title": "limits",
+              "type": "object"
+            },
+            "requests": {
+              "properties": {
+                "cpu": {
+                  "default": "100m",
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "256Mi",
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "cpu",
+                "memory"
+              ],
+              "title": "requests",
+              "type": "object"
+            }
+          },
+          "required": [
+            "requests",
+            "limits"
+          ],
+          "title": "resources",
+          "type": "object"
+        },
+        "storage": {
+          "properties": {
+            "size": {
+              "default": "8Gi",
+              "title": "size",
+              "type": "string"
+            }
+          },
+          "required": [
+            "size"
+          ],
+          "title": "storage",
+          "type": "object"
+        }
+      },
+      "required": [
+        "enabled",
+        "image",
+        "storage",
+        "resources"
+      ],
+      "title": "database",
+      "type": "object"
+    },
+    "externalSecrets": {
+      "items": {
+        "anyOf": [
+          {
+            "properties": {
+              "data": {
+                "properties": {
+                  "password": {
+                    "default": "admin-password",
+                    "title": "password",
+                    "type": "string"
+                  },
+                  "username": {
+                    "default": "admin-username",
+                    "title": "username",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "username",
+                  "password"
+                ],
+                "title": "data",
+                "type": "object"
+              },
+              "name": {
+                "default": "gitea-admin",
+                "title": "name",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "data"
+            ],
+            "type": "object"
+          }
+        ],
+        "required": []
+      },
+      "title": "externalSecrets",
+      "type": "array"
+    },
+    "gitea": {
+      "properties": {
+        "containerSecurityContext": {
+          "properties": {
+            "allowPrivilegeEscalation": {
+              "default": false,
+              "title": "allowPrivilegeEscalation",
+              "type": "boolean"
+            },
+            "capabilities": {
+              "properties": {
+                "drop": {
+                  "items": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      }
+                    ],
+                    "required": []
+                  },
+                  "title": "drop",
+                  "type": "array"
+                }
+              },
+              "required": [
+                "drop"
+              ],
+              "title": "capabilities",
+              "type": "object"
+            },
+            "readOnlyRootFilesystem": {
+              "default": true,
+              "title": "readOnlyRootFilesystem",
+              "type": "boolean"
+            },
+            "runAsGroup": {
+              "default": 1000,
+              "title": "runAsGroup",
+              "type": "integer"
+            },
+            "runAsNonRoot": {
+              "default": true,
+              "title": "runAsNonRoot",
+              "type": "boolean"
+            },
+            "runAsUser": {
+              "default": 1000,
+              "title": "runAsUser",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "allowPrivilegeEscalation",
+            "capabilities",
+            "readOnlyRootFilesystem",
+            "runAsNonRoot",
+            "runAsUser",
+            "runAsGroup"
+          ],
+          "title": "containerSecurityContext",
+          "type": "object"
+        },
+        "deployment": {
+          "properties": {
+            "annotations": {
+              "properties": {
+                "reloader.stakater.com/auto": {
+                  "default": "true",
+                  "title": "reloader.stakater.com/auto",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "reloader.stakater.com/auto"
+              ],
+              "title": "annotations",
+              "type": "object"
+            }
+          },
+          "required": [
+            "annotations"
+          ],
+          "title": "deployment",
+          "type": "object"
+        },
+        "gitea": {
+          "properties": {
+            "additionalConfigFromEnvs": {
+              "items": {
+                "anyOf": [
+                  {
+                    "properties": {
+                      "name": {
+                        "default": "GITEA__DATABASE__PASSWD",
+                        "title": "name",
+                        "type": "string"
+                      },
+                      "valueFrom": {
+                        "properties": {
+                          "secretKeyRef": {
+                            "properties": {
+                              "key": {
+                                "default": "password",
+                                "title": "key",
+                                "type": "string"
+                              },
+                              "name": {
+                                "default": "gitea-db",
+                                "title": "name",
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "name",
+                              "key"
+                            ],
+                            "title": "secretKeyRef",
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "secretKeyRef"
+                        ],
+                        "title": "valueFrom",
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "valueFrom"
+                    ],
+                    "type": "object"
+                  }
+                ],
+                "required": []
+              },
+              "title": "additionalConfigFromEnvs",
+              "type": "array"
+            },
+            "admin": {
+              "properties": {
+                "existingSecret": {
+                  "default": "gitea-admin",
+                  "title": "existingSecret",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "existingSecret"
+              ],
+              "title": "admin",
+              "type": "object"
+            },
+            "config": {
+              "properties": {
+                "database": {
+                  "properties": {
+                    "DB_TYPE": {
+                      "default": "postgres",
+                      "title": "DB_TYPE",
+                      "type": "string"
+                    },
+                    "HOST": {
+                      "default": "gitea-db-rw:5432",
+                      "title": "HOST",
+                      "type": "string"
+                    },
+                    "NAME": {
+                      "default": "gitea",
+                      "title": "NAME",
+                      "type": "string"
+                    },
+                    "USER": {
+                      "default": "gitea",
+                      "title": "USER",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "DB_TYPE",
+                    "HOST",
+                    "NAME",
+                    "USER"
+                  ],
+                  "title": "database",
+                  "type": "object"
+                },
+                "service": {
+                  "properties": {
+                    "DISABLE_REGISTRATION": {
+                      "default": true,
+                      "title": "DISABLE_REGISTRATION",
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "DISABLE_REGISTRATION"
+                  ],
+                  "title": "service",
+                  "type": "object"
+                }
+              },
+              "required": [
+                "database",
+                "service"
+              ],
+              "title": "config",
+              "type": "object"
+            }
+          },
+          "required": [
+            "admin",
+            "config",
+            "additionalConfigFromEnvs"
+          ],
+          "title": "gitea",
+          "type": "object"
+        },
+        "image": {
+          "properties": {
+            "fullOverride": {
+              "default": "docker.gitea.com/gitea:1.27.0-rootless@sha256:414ba5b2b1163480e9ed4213a989cd798579cfa88582a2359303273009b2b852",
+              "title": "fullOverride",
+              "type": "string"
+            }
+          },
+          "required": [
+            "fullOverride"
+          ],
+          "title": "image",
+          "type": "object"
+        },
+        "initContainers": {
+          "properties": {
+            "resources": {
+              "properties": {
+                "limits": {
+                  "properties": {
+                    "cpu": {
+                      "default": "500m",
+                      "title": "cpu",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "256Mi",
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "cpu",
+                    "memory"
+                  ],
+                  "title": "limits",
+                  "type": "object"
+                },
+                "requests": {
+                  "properties": {
+                    "cpu": {
+                      "default": "100m",
+                      "title": "cpu",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "128Mi",
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "cpu",
+                    "memory"
+                  ],
+                  "title": "requests",
+                  "type": "object"
+                }
+              },
+              "required": [
+                "requests",
+                "limits"
+              ],
+              "title": "resources",
+              "type": "object"
+            }
+          },
+          "required": [
+            "resources"
+          ],
+          "title": "initContainers",
+          "type": "object"
+        },
+        "podSecurityContext": {
+          "properties": {
+            "fsGroup": {
+              "default": 1000,
+              "title": "fsGroup",
+              "type": "integer"
+            },
+            "seccompProfile": {
+              "properties": {
+                "type": {
+                  "default": "RuntimeDefault",
+                  "title": "type",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "type"
+              ],
+              "title": "seccompProfile",
+              "type": "object"
+            }
+          },
+          "required": [
+            "fsGroup",
+            "seccompProfile"
+          ],
+          "title": "podSecurityContext",
+          "type": "object"
+        },
+        "postgresql-ha": {
+          "properties": {
+            "enabled": {
+              "default": false,
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "enabled"
+          ],
+          "title": "postgresql-ha",
+          "type": "object"
+        },
+        "resources": {
+          "properties": {
+            "limits": {
+              "properties": {
+                "cpu": {
+                  "default": "1",
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "1Gi",
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "cpu",
+                "memory"
+              ],
+              "title": "limits",
+              "type": "object"
+            },
+            "requests": {
+              "properties": {
+                "cpu": {
+                  "default": "100m",
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "256Mi",
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "cpu",
+                "memory"
+              ],
+              "title": "requests",
+              "type": "object"
+            }
+          },
+          "required": [
+            "requests",
+            "limits"
+          ],
+          "title": "resources",
+          "type": "object"
+        },
+        "serviceAccount": {
+          "properties": {
+            "create": {
+              "default": true,
+              "title": "create",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "create"
+          ],
+          "title": "serviceAccount",
+          "type": "object"
+        },
+        "test": {
+          "properties": {
+            "enabled": {
+              "default": false,
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "enabled"
+          ],
+          "title": "test",
+          "type": "object"
+        },
+        "valkey-cluster": {
+          "properties": {
+            "enabled": {
+              "default": false,
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "enabled"
+          ],
+          "title": "valkey-cluster",
+          "type": "object"
+        }
+      },
+      "required": [
+        "image",
+        "deployment",
+        "serviceAccount",
+        "podSecurityContext",
+        "containerSecurityContext",
+        "resources",
+        "initContainers",
+        "gitea",
+        "postgresql-ha",
+        "valkey-cluster",
+        "test"
+      ],
+      "title": "gitea",
+      "type": "object"
+    },
+    "global": {
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "httpRoute": {
+      "properties": {
+        "enabled": {
+          "default": true,
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "listener": {
+          "default": "http",
+          "title": "listener",
+          "type": "string"
+        },
+        "path": {
+          "default": "/",
+          "title": "path",
+          "type": "string"
+        },
+        "port": {
+          "default": 3000,
+          "title": "port",
+          "type": "integer"
+        },
+        "service": {
+          "default": "gitea-http",
+          "title": "service",
+          "type": "string"
+        }
+      },
+      "required": [
+        "enabled",
+        "listener",
+        "path",
+        "service",
+        "port"
+      ],
+      "title": "httpRoute",
+      "type": "object"
+    },
+    "networkPolicy": {
+      "properties": {
+        "allow": {
+          "items": {
+            "anyOf": [
+              {
+                "type": "string"
+              }
+            ],
+            "required": []
+          },
+          "title": "allow",
+          "type": "array"
+        },
+        "enabled": {
+          "default": true,
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "port": {
+          "default": 3000,
+          "title": "port",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "enabled",
+        "port",
+        "allow"
+      ],
+      "title": "networkPolicy",
+      "type": "object"
+    }
+  },
+  "required": [
+    "database",
+    "httpRoute",
+    "networkPolicy",
+    "externalSecrets",
+    "gitea"
+  ],
+  "type": "object"
+}

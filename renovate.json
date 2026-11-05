@@ -1,0 +1,74 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "customManagers": [
+    {
+      "customType": "regex",
+      "datasourceTemplate": "docker",
+      "description": "Container images in values files, pinned by tag and digest",
+      "managerFilePatterns": [
+        "/(^|/)values\\.ya?ml$/"
+      ],
+      "matchStrings": [
+        "(?:repository|image):\\s*(?<depName>\\S+)\\s*\\n\\s*tag:\\s*[\"']?(?<currentValue>[^\"'@\\s]+)[\"']?\\s*\\n\\s*digest:\\s*(?<currentDigest>sha256:[a-f0-9]{64})",
+        "(?:repository|image):\\s*(?<depName>\\S+)\\s*\\n(?:\\s*#\\s*renovate:\\s*versioning=(?<versioning>\\S+)\\s*\\n)?\\s*tag:\\s*(?<currentValue>\\S+?)@(?<currentDigest>sha256:[a-f0-9]{64})",
+        "(?<depName>[a-z0-9][a-z0-9./-]*):(?<currentValue>[A-Za-z0-9._-]+)@(?<currentDigest>sha256:[a-f0-9]{64})"
+      ],
+      "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}docker{{/if}}"
+    }
+  ],
+  "dependencyDashboard": true,
+  "extends": [
+    "config:recommended"
+  ],
+  "labels": [
+    "dependencies"
+  ],
+  "packageRules": [
+    {
+      "bumpVersions": [
+        {
+          "bumpType": "patch",
+          "filePatterns": [
+            "{{packageFileDir}}/Chart.yaml"
+          ],
+          "matchStrings": [
+            "(?m)^version:\\s(?<version>\\S+)$"
+          ],
+          "name": "Bump the catalog chart version"
+        }
+      ],
+      "matchFileNames": [
+        "kubernetes/catalog/**"
+      ]
+    },
+    {
+      "addLabels": [
+        "major"
+      ],
+      "dependencyDashboardApproval": true,
+      "matchUpdateTypes": [
+        "major"
+      ]
+    },
+    {
+      "matchUpdateTypes": [
+        "major",
+        "minor",
+        "patch"
+      ],
+      "minimumReleaseAge": "3 days"
+    }
+  ],
+  "pinDigests": true,
+  "postUpdateOptions": [
+    "helmUpdateSubChartArchives"
+  ],
+  "prConcurrentLimit": 0,
+  "pre-commit": {
+    "enabled": true
+  },
+  "schedule": [
+    "before 6am on monday"
+  ],
+  "semanticCommits": "enabled"
+}

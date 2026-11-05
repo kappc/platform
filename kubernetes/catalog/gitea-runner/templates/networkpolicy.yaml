@@ -1,0 +1,16 @@
+{{- if and .Values.networkPolicy .Values.networkPolicy.enabled }}
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector: {}
+  ingress:
+    - fromEntities:
+        - host
+        - remote-node
+      fromEndpoints:
+        - {}
+{{- end }}

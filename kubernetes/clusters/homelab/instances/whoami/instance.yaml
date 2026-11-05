@@ -1,7 +1,6 @@
 ---
 application: whoami
 argocd:
-  name: whoami
-  project: platform
+  project: workload
   rolloutGroup: workload
 namespace: whoami

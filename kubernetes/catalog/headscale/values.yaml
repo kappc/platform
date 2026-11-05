@@ -1,0 +1,59 @@
+---
+image:
+  repository: headscale/headscale
+  tag: "0.29.7"
+  digest: sha256:11f81665e842809db9fe3006a38c56a66e968baa5abd4bac498e86445572b970
+
+database:
+  enabled: false
+  image:
+    repository: ghcr.io/cloudnative-pg/postgresql
+    tag: "17.7"
+    digest: sha256:dab846a58e8ca3c8872584ab2225ee93fb9e659a87c52e163fefae9275b46f51
+  storage:
+    size: 8Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+
+httpRoute:
+  enabled: true
+  listener: http
+  path: /
+  port: 8080
+
+networkPolicy:
+  enabled: true
+  port: 8080
+
+config:
+  prefixes:
+    v4: 100.64.0.0/10
+    v6: fd7a:115c:a1e0::/48
+  derp:
+    server:
+      enabled: false
+    urls:
+      - https://controlplane.tailscale.com/derpmap/default
+  dns:
+    magicDns: true
+    baseDomain: example.com
+    nameservers:
+      global:
+        - 1.1.1.1
+        - 1.0.0.1
+
+persistence:
+  size: 5Gi
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi

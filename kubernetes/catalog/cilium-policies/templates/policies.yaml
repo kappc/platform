@@ -1,0 +1,77 @@
+---
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-default-deny-ingress
+  labels:
+    {{- include "cilium-policies.labels" . | nindent 4 }}
+spec:
+  endpointSelector:
+    matchExpressions:
+      - key: io.kubernetes.pod.namespace
+        operator: NotIn
+        values:
+          {{- toYaml .Values.excludedNamespaces | nindent 10 }}
+  ingress:
+    - fromEntities:
+        - host
+        - remote-node
+        - kube-apiserver
+{{- range .Values.sameNamespace }}
+---
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: {{ $.Release.Name }}-allow-namespace-{{ . }}
+  labels:
+    {{- include "cilium-policies.labels" $ | nindent 4 }}
+spec:
+  endpointSelector:
+    matchLabels:
+      io.kubernetes.pod.namespace: {{ . }}
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: {{ . }}
+{{- end }}
+{{- range .Values.allowRules }}
+{{- $name := required "allowRules[].name must be set" .name }}
+{{- if not (or .fromNamespaces .fromEntities) }}
+{{- fail (printf "allowRules[%s] needs fromNamespaces or fromEntities" $name) }}
+{{- end }}
+---
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: {{ $.Release.Name }}-{{ $name }}
+  labels:
+    {{- include "cilium-policies.labels" $ | nindent 4 }}
+spec:
+  endpointSelector:
+    matchLabels:
+      io.kubernetes.pod.namespace: {{ required "allowRules[].to.namespace must be set" .to.namespace }}
+      {{- with .to.podLabels }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+  ingress:
+    - {{- with .fromNamespaces }}
+      fromEndpoints:
+        - matchExpressions:
+            - key: k8s:io.kubernetes.pod.namespace
+              operator: In
+              values:
+                {{- toYaml . | nindent 16 }}
+      {{- end }}
+      {{- with .fromEntities }}
+      fromEntities:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .ports }}
+      toPorts:
+        - ports:
+            {{- range . }}
+            - port: {{ . | quote }}
+              protocol: TCP
+            {{- end }}
+      {{- end }}
+{{- end }}

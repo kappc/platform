@@ -1,0 +1,63 @@
+{{- if and .Values.database .Values.database.enabled }}
+{{- $img := .Values.database.image -}}
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: {{ printf "%s-db" .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    argocd.argoproj.io/sync-options: Prune=confirm
+spec:
+  imageName: "{{ $img.repository }}:{{ $img.tag }}@{{ $img.digest }}"
+  bootstrap:
+    initdb:
+      database: {{ .Release.Name }}
+      owner: {{ .Release.Name }}
+  storage:
+    size: {{ .Values.database.storage.size }}
+    {{- with .Values.database.storage.storageClass }}
+    storageClass: {{ . }}
+    {{- end }}
+  resources:
+    {{- toYaml .Values.database.resources | nindent 4 }}
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: DatabaseRole
+metadata:
+  name: {{ printf "%s-app" .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  cluster:
+    name: {{ printf "%s-db" .Release.Name }}
+  name: {{ .Release.Name }}
+  login: true
+  inherit: true
+  passwordSecret:
+    name: {{ printf "%s-db" .Release.Name }}
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: {{ printf "%s-db" .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  secretStoreRef:
+    name: openbao
+    kind: ClusterSecretStore
+  target:
+    name: {{ printf "%s-db" .Release.Name }}
+    creationPolicy: Owner
+    deletionPolicy: Retain
+    template:
+      type: kubernetes.io/basic-auth
+  data:
+    - secretKey: username
+      remoteRef:
+        key: {{ .Release.Name }}
+        property: db-username
+    - secretKey: password
+      remoteRef:
+        key: {{ .Release.Name }}
+        property: db-password
+{{- end }}

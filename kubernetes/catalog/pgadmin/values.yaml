@@ -1,0 +1,53 @@
+---
+httpRoute:
+  enabled: true
+  listener: http
+  path: /
+  port: 80
+
+networkPolicy:
+  enabled: true
+  port: 8080
+
+externalSecrets:
+  - name: pgadmin-config
+    data:
+      password: admin-password
+
+pgadmin4:
+  fullnameOverride: pgadmin
+  image:
+    repository: dpage/pgadmin4
+    tag: 9.18@sha256:c332c5f6dfba995d9ebc4af261d93506d6876085d712eaaa3defc8dd1a3f26de
+  podAnnotations:
+    reloader.stakater.com/auto: "true"
+  serviceAccount:
+    create: true
+  existingSecret: pgadmin-config
+  env:
+    email: admin@example.com
+  containerPorts:
+    http: 8080
+  containerSecurityContext:
+    enabled: true
+    allowPrivilegeEscalation: false
+    runAsNonRoot: true
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
+  persistentVolume:
+    size: 2Gi
+  resources:
+    requests:
+      cpu: 50m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  networkPolicy:
+    enabled: false
+  test:
+    enabled: false

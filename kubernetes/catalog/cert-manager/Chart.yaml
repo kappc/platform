@@ -1,7 +1,7 @@
 ---
 apiVersion: v2
 name: cert-manager
-description: Certificate lifecycle management for the Kubernetes platform
+description: cert-manager certificate management
 type: application
 version: 0.1.0
 dependencies:

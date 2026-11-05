@@ -9,5 +9,7 @@ spec:
   ipAddressPools:
     - {{ .Values.addressPool.name }}
   interfaces:
-    {{- required "l2Advertisement.interfaces must contain one or more interfaces" .Values.l2Advertisement.interfaces | toYaml | nindent 4 }}
+    {{- $err := "l2Advertisement.interfaces must contain one or more interfaces" }}
+    {{- $interfaces := required $err .Values.l2Advertisement.interfaces }}
+    {{- toYaml $interfaces | nindent 4 }}
 {{- end }}

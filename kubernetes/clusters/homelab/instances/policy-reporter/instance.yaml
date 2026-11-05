@@ -1,7 +1,6 @@
 ---
 application: policy-reporter
 argocd:
-  name: policy-reporter
   project: platform
   rolloutGroup: platform
 namespace: policy-reporter

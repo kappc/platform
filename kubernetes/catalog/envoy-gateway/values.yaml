@@ -21,9 +21,26 @@ gateway:
   listener:
     name: http
     port: 80
-    allowedRoutes:
-      namespaces:
-        from: All
+  # -- Which namespaces may attach routes to all listeners; `Same` admits the gateway namespace only, `All` every
+  # namespace, and `Selector` with a `selector` specific namespaces
+  allowedRoutes:
+    namespaces:
+      from: Same
+  tls:
+    # -- Add an HTTPS listener that terminates TLS with the certificate in `secretName` (requires cert-manager)
+    enabled: false
+    listener:
+      name: https
+      port: 443
+      # -- Hostname served by the listener
+      hostname: ""
+    # -- Name of the `Secret` that holds the certificate
+    secretName: gateway-tls
+    certificate:
+      # -- Existing cert-manager issuer for the certificate; when empty, a private CA is created
+      issuerRef: {}
+      # -- DNS names of the certificate
+      dnsNames: []
 
 envoyProxy:
   name: envoy-proxy

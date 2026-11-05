@@ -11,4 +11,20 @@ spec:
       protocol: HTTP
       port: {{ .Values.gateway.listener.port }}
       allowedRoutes:
-        {{- toYaml .Values.gateway.listener.allowedRoutes | nindent 8 }}
+        {{- toYaml .Values.gateway.allowedRoutes | nindent 8 }}
+    {{- if .Values.gateway.tls.enabled }}
+    - name: {{ .Values.gateway.tls.listener.name }}
+      protocol: HTTPS
+      port: {{ .Values.gateway.tls.listener.port }}
+      {{- with .Values.gateway.tls.listener.hostname }}
+      hostname: {{ . | quote }}
+      {{- end }}
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - group: ""
+            kind: Secret
+            name: {{ .Values.gateway.tls.secretName }}
+      allowedRoutes:
+        {{- toYaml .Values.gateway.allowedRoutes | nindent 8 }}
+    {{- end }}

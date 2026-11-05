@@ -4,6 +4,8 @@ kind: ApplicationSet
 metadata:
   name: applications
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-options: Delete=confirm,Prune=confirm
 spec:
   goTemplate: true
   goTemplateOptions:
@@ -35,7 +37,7 @@ spec:
                 - workload
   template:
     metadata:
-      name: '{{ .argocd.name }}'
+      name: '{{ .path.basename }}'
       labels:
         rollout-group: '{{ .argocd.rolloutGroup }}'
       finalizers:
@@ -47,10 +49,9 @@ spec:
           targetRevision: main
           path: kubernetes/catalog/{{ .application }}
           helm:
-            releaseName: '{{ .argocd.name }}'
+            releaseName: '{{ .path.basename }}'
             valueFiles:
-              - $values/kubernetes/catalog/{{ .application }}/values.yaml
-              - $values/kubernetes/clusters/homelab/instances/{{ .argocd.name }}/values.yaml
+              - $values/{{ .path.path }}/values.yaml
             ignoreMissingValueFiles: true
         - repoURL: https://github.com/kappc/platform.git
           targetRevision: main
@@ -59,6 +60,12 @@ spec:
         server: https://kubernetes.default.svc
         namespace: '{{ .namespace }}'
       syncPolicy:
+        retry:
+          limit: 5
+          backoff:
+            duration: 10s
+            factor: 2
+            maxDuration: 3m
         syncOptions:
           - CreateNamespace=true
           - Prune=true

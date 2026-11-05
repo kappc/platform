@@ -1,0 +1,62 @@
+---
+image:
+  repository: s1t5/mailarchiver
+  tag: "2610.1"
+  digest: sha256:d354bf8cefc4d825dd22cb2d8a70d6622cabbc08b0fa08983e3660f6c2f0a322
+
+database:
+  enabled: true
+  image:
+    repository: ghcr.io/cloudnative-pg/postgresql
+    tag: "17.7"
+    digest: sha256:dab846a58e8ca3c8872584ab2225ee93fb9e659a87c52e163fefae9275b46f51
+  storage:
+    size: 8Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+
+httpRoute:
+  enabled: true
+  listener: http
+  path: /
+  port: 5000
+
+networkPolicy:
+  enabled: true
+  port: 5000
+
+externalSecrets:
+  - name: mail-archiver-config
+    data:
+      dbPassword: db-password
+      adminUsername: admin-username
+      adminPassword: admin-password
+      encryptionKey: encryption-key
+    template:
+      ConnectionStrings__DefaultConnection: >-
+        Host=mail-archiver-db-rw;Port=5432;Database=mail-archiver;Username=mail-archiver;Password={{ .dbPassword }};
+      Authentication__Username: "{{ .adminUsername }}"
+      Authentication__Password: "{{ .adminPassword }}"
+      Security__CredentialEncryptionKey: "{{ .encryptionKey }}"
+
+# -- Application settings as environment variables, for example `Section__Key: value`
+env:
+  Authentication__CookieSameSite: Lax
+
+persistence:
+  dataProtection:
+    # -- Size of the volume that keeps the keys protecting cookies across restarts
+    size: 1Gi
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: "1"
+    memory: 1Gi

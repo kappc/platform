@@ -1,7 +1,6 @@
 ---
 application: envoy-gateway
 argocd:
-  name: envoy-gateway
-  project: platform
+  project: infrastructure
   rolloutGroup: infrastructure
 namespace: envoy-gateway-system

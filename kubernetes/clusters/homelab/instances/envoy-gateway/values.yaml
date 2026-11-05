@@ -1,8 +1,17 @@
 ---
+gateway:
+  allowedRoutes:
+    namespaces:
+      from: All
+  tls:
+    enabled: true
+    listener:
+      hostname: "*.homelab.test"
+    certificate:
+      dnsNames:
+        - "*.homelab.test"
+
 envoyProxy:
   service:
-    type: LoadBalancer
-    externalTrafficPolicy: Cluster
     annotations:
-      metallb.io/address-pool: default
       metallb.io/loadBalancerIPs: 192.168.49.240

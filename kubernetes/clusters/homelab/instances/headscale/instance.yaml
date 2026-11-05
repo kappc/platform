@@ -1,0 +1,6 @@
+---
+application: headscale
+argocd:
+  project: workload
+  rolloutGroup: workload
+namespace: headscale

@@ -1,0 +1,40 @@
+{{- if and .Values.networkPolicy .Values.networkPolicy.enabled }}
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpointSelector: {}
+  ingress:
+    - fromEntities:
+        - host
+        - remote-node
+      fromEndpoints:
+        - {}
+    {{- if .Values.networkPolicy.port }}
+    - fromEndpoints:
+        - matchExpressions:
+            - key: k8s:io.kubernetes.pod.namespace
+              operator: In
+              values:
+                {{- $allow := .Values.networkPolicy.allow | default list -}}
+                {{- toYaml (concat (list "envoy-gateway-system") $allow | uniq) | nindent 16 }}
+      toPorts:
+        - ports:
+            - port: {{ .Values.networkPolicy.port | quote }}
+              protocol: TCP
+    {{- end }}
+    {{- if and .Values.database .Values.database.enabled }}
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: cnpg-system
+      toPorts:
+        - ports:
+            - port: "5432"
+              protocol: TCP
+            - port: "8000"
+              protocol: TCP
+    {{- end }}
+{{- end }}

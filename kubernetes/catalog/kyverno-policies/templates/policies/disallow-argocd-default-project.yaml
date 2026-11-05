@@ -1,0 +1,28 @@
+---
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: disallow-argocd-default-project
+  annotations:
+    policies.kyverno.io/title: Disallow Argo CD Default Project
+    policies.kyverno.io/category: Argo CD
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Application
+    policies.kyverno.io/description: Argo CD applications must not target the default project.
+spec:
+  validationActions:
+    - {{ .Values.customPolicies.validationFailureAction }}
+  matchConstraints:
+    resourceRules:
+      - apiGroups:
+          - argoproj.io
+        apiVersions:
+          - v1alpha1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - applications
+  validations:
+    - message: Using the 'default' project is not allowed. Applications must target a designated AppProject.
+      expression: has(object.spec.project) && object.spec.project != '' && object.spec.project != 'default'

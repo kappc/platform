@@ -3,6 +3,12 @@ reloader:
   reloader:
     watchGlobally: false
     deployment:
+      containerSecurityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
       resources:
         requests:
           cpu: 50m

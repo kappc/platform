@@ -1,0 +1,515 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "database": {
+      "properties": {
+        "enabled": {
+          "default": true,
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "image": {
+          "properties": {
+            "digest": {
+              "default": "sha256:dab846a58e8ca3c8872584ab2225ee93fb9e659a87c52e163fefae9275b46f51",
+              "title": "digest",
+              "type": "string"
+            },
+            "repository": {
+              "default": "ghcr.io/cloudnative-pg/postgresql",
+              "title": "repository",
+              "type": "string"
+            },
+            "tag": {
+              "default": "17.7",
+              "title": "tag",
+              "type": "string"
+            }
+          },
+          "required": [
+            "repository",
+            "tag",
+            "digest"
+          ],
+          "title": "image",
+          "type": "object"
+        },
+        "resources": {
+          "properties": {
+            "limits": {
+              "properties": {
+                "cpu": {
+                  "default": "1",
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "1Gi",
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "cpu",
+                "memory"
+              ],
+              "title": "limits",
+              "type": "object"
+            },
+            "requests": {
+              "properties": {
+                "cpu": {
+                  "default": "100m",
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "256Mi",
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "cpu",
+                "memory"
+              ],
+              "title": "requests",
+              "type": "object"
+            }
+          },
+          "required": [
+            "requests",
+            "limits"
+          ],
+          "title": "resources",
+          "type": "object"
+        },
+        "storage": {
+          "properties": {
+            "size": {
+              "default": "8Gi",
+              "title": "size",
+              "type": "string"
+            }
+          },
+          "required": [
+            "size"
+          ],
+          "title": "storage",
+          "type": "object"
+        }
+      },
+      "required": [
+        "enabled",
+        "image",
+        "storage",
+        "resources"
+      ],
+      "title": "database",
+      "type": "object"
+    },
+    "externalSecrets": {
+      "items": {
+        "anyOf": [
+          {
+            "properties": {
+              "data": {
+                "properties": {
+                  "ADMIN_TOKEN": {
+                    "default": "admin-token",
+                    "title": "ADMIN_TOKEN",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "ADMIN_TOKEN"
+                ],
+                "title": "data",
+                "type": "object"
+              },
+              "name": {
+                "default": "vaultwarden-config",
+                "title": "name",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "data"
+            ],
+            "type": "object"
+          }
+        ],
+        "required": []
+      },
+      "title": "externalSecrets",
+      "type": "array"
+    },
+    "global": {
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "httpRoute": {
+      "properties": {
+        "enabled": {
+          "default": true,
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "listener": {
+          "default": "https",
+          "title": "listener",
+          "type": "string"
+        },
+        "path": {
+          "default": "/",
+          "title": "path",
+          "type": "string"
+        },
+        "port": {
+          "default": 80,
+          "title": "port",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "enabled",
+        "listener",
+        "path",
+        "port"
+      ],
+      "title": "httpRoute",
+      "type": "object"
+    },
+    "networkPolicy": {
+      "properties": {
+        "enabled": {
+          "default": true,
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "port": {
+          "default": 8080,
+          "title": "port",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "enabled",
+        "port"
+      ],
+      "title": "networkPolicy",
+      "type": "object"
+    },
+    "vaultwarden": {
+      "properties": {
+        "adminToken": {
+          "properties": {
+            "existingSecret": {
+              "default": "vaultwarden-config",
+              "title": "existingSecret",
+              "type": "string"
+            },
+            "existingSecretKey": {
+              "default": "ADMIN_TOKEN",
+              "title": "existingSecretKey",
+              "type": "string"
+            }
+          },
+          "required": [
+            "existingSecret",
+            "existingSecretKey"
+          ],
+          "title": "adminToken",
+          "type": "object"
+        },
+        "commonAnnotations": {
+          "properties": {
+            "reloader.stakater.com/auto": {
+              "default": "true",
+              "title": "reloader.stakater.com/auto",
+              "type": "string"
+            }
+          },
+          "required": [
+            "reloader.stakater.com/auto"
+          ],
+          "title": "commonAnnotations",
+          "type": "object"
+        },
+        "database": {
+          "properties": {
+            "dbName": {
+              "default": "vaultwarden",
+              "title": "dbName",
+              "type": "string"
+            },
+            "enableWal": {
+              "default": false,
+              "title": "enableWal",
+              "type": "boolean"
+            },
+            "existingSecret": {
+              "default": "vaultwarden-db",
+              "title": "existingSecret",
+              "type": "string"
+            },
+            "host": {
+              "default": "vaultwarden-db-rw",
+              "title": "host",
+              "type": "string"
+            },
+            "port": {
+              "default": "5432",
+              "title": "port",
+              "type": "string"
+            },
+            "type": {
+              "default": "postgresql",
+              "title": "type",
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "host",
+            "port",
+            "dbName",
+            "existingSecret",
+            "enableWal"
+          ],
+          "title": "database",
+          "type": "object"
+        },
+        "image": {
+          "properties": {
+            "repository": {
+              "default": "vaultwarden/server",
+              "title": "repository",
+              "type": "string"
+            },
+            "tag": {
+              "default": "1.37.4-alpine@sha256:19ea2b669945d842dadc3d500f2d6a795866a003330f59a47b9634658bae98bb",
+              "title": "tag",
+              "type": "string"
+            }
+          },
+          "required": [
+            "repository",
+            "tag"
+          ],
+          "title": "image",
+          "type": "object"
+        },
+        "podSecurityContext": {
+          "properties": {
+            "fsGroup": {
+              "default": 1001,
+              "title": "fsGroup",
+              "type": "integer"
+            },
+            "seccompProfile": {
+              "properties": {
+                "type": {
+                  "default": "RuntimeDefault",
+                  "title": "type",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "type"
+              ],
+              "title": "seccompProfile",
+              "type": "object"
+            }
+          },
+          "required": [
+            "fsGroup",
+            "seccompProfile"
+          ],
+          "title": "podSecurityContext",
+          "type": "object"
+        },
+        "resources": {
+          "properties": {
+            "limits": {
+              "properties": {
+                "cpu": {
+                  "default": "500m",
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "512Mi",
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "cpu",
+                "memory"
+              ],
+              "title": "limits",
+              "type": "object"
+            },
+            "requests": {
+              "properties": {
+                "cpu": {
+                  "default": "50m",
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "128Mi",
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "cpu",
+                "memory"
+              ],
+              "title": "requests",
+              "type": "object"
+            }
+          },
+          "required": [
+            "requests",
+            "limits"
+          ],
+          "title": "resources",
+          "type": "object"
+        },
+        "securityContext": {
+          "properties": {
+            "allowPrivilegeEscalation": {
+              "default": false,
+              "title": "allowPrivilegeEscalation",
+              "type": "boolean"
+            },
+            "capabilities": {
+              "properties": {
+                "drop": {
+                  "items": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      }
+                    ],
+                    "required": []
+                  },
+                  "title": "drop",
+                  "type": "array"
+                }
+              },
+              "required": [
+                "drop"
+              ],
+              "title": "capabilities",
+              "type": "object"
+            },
+            "readOnlyRootFilesystem": {
+              "default": true,
+              "title": "readOnlyRootFilesystem",
+              "type": "boolean"
+            },
+            "runAsGroup": {
+              "default": 1001,
+              "title": "runAsGroup",
+              "type": "integer"
+            },
+            "runAsNonRoot": {
+              "default": true,
+              "title": "runAsNonRoot",
+              "type": "boolean"
+            },
+            "runAsUser": {
+              "default": 1001,
+              "title": "runAsUser",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "allowPrivilegeEscalation",
+            "capabilities",
+            "readOnlyRootFilesystem",
+            "runAsNonRoot",
+            "runAsUser",
+            "runAsGroup"
+          ],
+          "title": "securityContext",
+          "type": "object"
+        },
+        "signupsAllowed": {
+          "default": false,
+          "title": "signupsAllowed",
+          "type": "boolean"
+        },
+        "storage": {
+          "properties": {
+            "data": {
+              "properties": {
+                "accessMode": {
+                  "default": "ReadWriteOnce",
+                  "title": "accessMode",
+                  "type": "string"
+                },
+                "keepPvc": {
+                  "default": true,
+                  "title": "keepPvc",
+                  "type": "boolean"
+                },
+                "name": {
+                  "default": "vaultwarden-data",
+                  "title": "name",
+                  "type": "string"
+                },
+                "size": {
+                  "default": "2Gi",
+                  "title": "size",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "size",
+                "accessMode",
+                "keepPvc"
+              ],
+              "title": "data",
+              "type": "object"
+            }
+          },
+          "required": [
+            "data"
+          ],
+          "title": "storage",
+          "type": "object"
+        }
+      },
+      "required": [
+        "image",
+        "commonAnnotations",
+        "podSecurityContext",
+        "securityContext",
+        "resources",
+        "storage",
+        "database",
+        "adminToken",
+        "signupsAllowed"
+      ],
+      "title": "vaultwarden",
+      "type": "object"
+    }
+  },
+  "required": [
+    "database",
+    "httpRoute",
+    "networkPolicy",
+    "externalSecrets",
+    "vaultwarden"
+  ],
+  "type": "object"
+}

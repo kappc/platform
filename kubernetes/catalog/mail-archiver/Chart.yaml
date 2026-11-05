@@ -1,0 +1,7 @@
+---
+apiVersion: v2
+name: mail-archiver
+description: Mail Archiver email archiving system
+type: application
+version: 0.1.0
+appVersion: "2610.1"

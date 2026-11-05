@@ -1,0 +1,382 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "config": {
+      "properties": {
+        "derp": {
+          "properties": {
+            "server": {
+              "properties": {
+                "enabled": {
+                  "default": false,
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "enabled"
+              ],
+              "title": "server",
+              "type": "object"
+            },
+            "urls": {
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  }
+                ],
+                "required": []
+              },
+              "title": "urls",
+              "type": "array"
+            }
+          },
+          "required": [
+            "server",
+            "urls"
+          ],
+          "title": "derp",
+          "type": "object"
+        },
+        "dns": {
+          "properties": {
+            "baseDomain": {
+              "default": "example.com",
+              "title": "baseDomain",
+              "type": "string"
+            },
+            "magicDns": {
+              "default": true,
+              "title": "magicDns",
+              "type": "boolean"
+            },
+            "nameservers": {
+              "properties": {
+                "global": {
+                  "items": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "string"
+                      }
+                    ],
+                    "required": []
+                  },
+                  "title": "global",
+                  "type": "array"
+                }
+              },
+              "required": [
+                "global"
+              ],
+              "title": "nameservers",
+              "type": "object"
+            }
+          },
+          "required": [
+            "magicDns",
+            "baseDomain",
+            "nameservers"
+          ],
+          "title": "dns",
+          "type": "object"
+        },
+        "prefixes": {
+          "properties": {
+            "v4": {
+              "default": "100.64.0.0/10",
+              "title": "v4",
+              "type": "string"
+            },
+            "v6": {
+              "default": "fd7a:115c:a1e0::/48",
+              "title": "v6",
+              "type": "string"
+            }
+          },
+          "required": [
+            "v4",
+            "v6"
+          ],
+          "title": "prefixes",
+          "type": "object"
+        }
+      },
+      "required": [
+        "prefixes",
+        "derp",
+        "dns"
+      ],
+      "title": "config",
+      "type": "object"
+    },
+    "database": {
+      "properties": {
+        "enabled": {
+          "default": false,
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "image": {
+          "properties": {
+            "digest": {
+              "default": "sha256:dab846a58e8ca3c8872584ab2225ee93fb9e659a87c52e163fefae9275b46f51",
+              "title": "digest",
+              "type": "string"
+            },
+            "repository": {
+              "default": "ghcr.io/cloudnative-pg/postgresql",
+              "title": "repository",
+              "type": "string"
+            },
+            "tag": {
+              "default": "17.7",
+              "title": "tag",
+              "type": "string"
+            }
+          },
+          "required": [
+            "repository",
+            "tag",
+            "digest"
+          ],
+          "title": "image",
+          "type": "object"
+        },
+        "resources": {
+          "properties": {
+            "limits": {
+              "properties": {
+                "cpu": {
+                  "default": "1",
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "1Gi",
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "cpu",
+                "memory"
+              ],
+              "title": "limits",
+              "type": "object"
+            },
+            "requests": {
+              "properties": {
+                "cpu": {
+                  "default": "100m",
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "256Mi",
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "cpu",
+                "memory"
+              ],
+              "title": "requests",
+              "type": "object"
+            }
+          },
+          "required": [
+            "requests",
+            "limits"
+          ],
+          "title": "resources",
+          "type": "object"
+        },
+        "storage": {
+          "properties": {
+            "size": {
+              "default": "8Gi",
+              "title": "size",
+              "type": "string"
+            }
+          },
+          "required": [
+            "size"
+          ],
+          "title": "storage",
+          "type": "object"
+        }
+      },
+      "required": [
+        "enabled",
+        "image",
+        "storage",
+        "resources"
+      ],
+      "title": "database",
+      "type": "object"
+    },
+    "global": {
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "httpRoute": {
+      "properties": {
+        "enabled": {
+          "default": true,
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "listener": {
+          "default": "http",
+          "title": "listener",
+          "type": "string"
+        },
+        "path": {
+          "default": "/",
+          "title": "path",
+          "type": "string"
+        },
+        "port": {
+          "default": 8080,
+          "title": "port",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "enabled",
+        "listener",
+        "path",
+        "port"
+      ],
+      "title": "httpRoute",
+      "type": "object"
+    },
+    "image": {
+      "properties": {
+        "digest": {
+          "default": "sha256:11f81665e842809db9fe3006a38c56a66e968baa5abd4bac498e86445572b970",
+          "title": "digest",
+          "type": "string"
+        },
+        "repository": {
+          "default": "headscale/headscale",
+          "title": "repository",
+          "type": "string"
+        },
+        "tag": {
+          "default": "0.29.7",
+          "title": "tag",
+          "type": "string"
+        }
+      },
+      "required": [
+        "repository",
+        "tag",
+        "digest"
+      ],
+      "title": "image",
+      "type": "object"
+    },
+    "networkPolicy": {
+      "properties": {
+        "enabled": {
+          "default": true,
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "port": {
+          "default": 8080,
+          "title": "port",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "enabled",
+        "port"
+      ],
+      "title": "networkPolicy",
+      "type": "object"
+    },
+    "persistence": {
+      "properties": {
+        "size": {
+          "default": "5Gi",
+          "title": "size",
+          "type": "string"
+        }
+      },
+      "required": [
+        "size"
+      ],
+      "title": "persistence",
+      "type": "object"
+    },
+    "resources": {
+      "properties": {
+        "limits": {
+          "properties": {
+            "cpu": {
+              "default": "500m",
+              "title": "cpu",
+              "type": "string"
+            },
+            "memory": {
+              "default": "512Mi",
+              "title": "memory",
+              "type": "string"
+            }
+          },
+          "required": [
+            "cpu",
+            "memory"
+          ],
+          "title": "limits",
+          "type": "object"
+        },
+        "requests": {
+          "properties": {
+            "cpu": {
+              "default": "100m",
+              "title": "cpu",
+              "type": "string"
+            },
+            "memory": {
+              "default": "128Mi",
+              "title": "memory",
+              "type": "string"
+            }
+          },
+          "required": [
+            "cpu",
+            "memory"
+          ],
+          "title": "requests",
+          "type": "object"
+        }
+      },
+      "required": [
+        "requests",
+        "limits"
+      ],
+      "title": "resources",
+      "type": "object"
+    }
+  },
+  "required": [
+    "image",
+    "database",
+    "httpRoute",
+    "networkPolicy",
+    "config",
+    "persistence",
+    "resources"
+  ],
+  "type": "object"
+}

@@ -1,0 +1,143 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "argo-cd": {
+      "properties": {
+        "configs": {
+          "properties": {
+            "params": {
+              "properties": {
+                "applicationsetcontroller.enable.progressive.syncs": {
+                  "default": "true",
+                  "title": "applicationsetcontroller.enable.progressive.syncs",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "applicationsetcontroller.enable.progressive.syncs"
+              ],
+              "title": "params",
+              "type": "object"
+            }
+          },
+          "required": [
+            "params"
+          ],
+          "title": "configs",
+          "type": "object"
+        },
+        "dex": {
+          "properties": {
+            "networkPolicy": {
+              "properties": {
+                "create": {
+                  "default": true,
+                  "title": "create",
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "create"
+              ],
+              "title": "networkPolicy",
+              "type": "object"
+            }
+          },
+          "required": [
+            "networkPolicy"
+          ],
+          "title": "dex",
+          "type": "object"
+        },
+        "global": {
+          "properties": {
+            "networkPolicy": {
+              "properties": {
+                "create": {
+                  "default": false,
+                  "title": "create",
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "create"
+              ],
+              "title": "networkPolicy",
+              "type": "object"
+            }
+          },
+          "required": [
+            "networkPolicy"
+          ],
+          "title": "global",
+          "type": "object"
+        },
+        "notifications": {
+          "properties": {
+            "networkPolicy": {
+              "properties": {
+                "create": {
+                  "default": true,
+                  "title": "create",
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "create"
+              ],
+              "title": "networkPolicy",
+              "type": "object"
+            }
+          },
+          "required": [
+            "networkPolicy"
+          ],
+          "title": "notifications",
+          "type": "object"
+        },
+        "redis": {
+          "properties": {
+            "networkPolicy": {
+              "properties": {
+                "create": {
+                  "default": true,
+                  "title": "create",
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "create"
+              ],
+              "title": "networkPolicy",
+              "type": "object"
+            }
+          },
+          "required": [
+            "networkPolicy"
+          ],
+          "title": "redis",
+          "type": "object"
+        }
+      },
+      "required": [
+        "global",
+        "configs",
+        "dex",
+        "notifications",
+        "redis"
+      ],
+      "title": "argo-cd",
+      "type": "object"
+    },
+    "global": {
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    }
+  },
+  "required": [
+    "argo-cd"
+  ],
+  "type": "object"
+}

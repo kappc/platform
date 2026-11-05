@@ -1,0 +1,45 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ printf "%s-config" .Release.Name }}
+  labels:
+    {{- include "headscale.labels" . | nindent 4 }}
+data:
+  config.yaml: |
+    server_url: {{ printf "https://%s" (required "httpRoute.hostname is required" .Values.httpRoute.hostname) }}
+    listen_addr: 0.0.0.0:8080
+    metrics_listen_addr: 0.0.0.0:9090
+    grpc_listen_addr: 0.0.0.0:50443
+    grpc_allow_insecure: true
+    noise:
+      private_key_path: /var/lib/headscale/noise_private.key
+    prefixes:
+      v4: {{ .Values.config.prefixes.v4 | quote }}
+      v6: {{ .Values.config.prefixes.v6 | quote }}
+    derp:
+      server:
+        enabled: {{ .Values.config.derp.server.enabled }}
+      urls:
+        {{- toYaml .Values.config.derp.urls | nindent 8 }}
+    {{- if .Values.database.enabled }}
+    database:
+      type: postgres
+      postgres:
+        host: {{ printf "%s-db-rw" .Release.Name }}
+        port: 5432
+        name: {{ .Release.Name }}
+        user: {{ .Release.Name }}
+        ssl: false
+    {{- else }}
+    database:
+      type: sqlite
+      sqlite:
+        path: /var/lib/headscale/db.sqlite
+    {{- end }}
+    dns:
+      magic_dns: {{ .Values.config.dns.magicDns }}
+      base_domain: {{ .Values.config.dns.baseDomain | quote }}
+      nameservers:
+        global:
+          {{- toYaml .Values.config.dns.nameservers.global | nindent 10 }}

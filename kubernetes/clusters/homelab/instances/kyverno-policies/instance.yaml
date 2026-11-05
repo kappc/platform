@@ -1,7 +1,6 @@
 ---
 application: kyverno-policies
 argocd:
-  name: kyverno-policies
-  project: platform
-  rolloutGroup: platform
+  project: infrastructure
+  rolloutGroup: infrastructure
 namespace: kyverno

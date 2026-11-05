@@ -1,8 +1,7 @@
 ---
 application: cilium
 argocd:
-  name: cilium
-  project: platform
+  project: infrastructure
   rolloutGroup: infrastructure
   ignoreDifferences:
     - group: ""

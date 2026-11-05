@@ -1,0 +1,632 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "authentik": {
+      "properties": {
+        "authentik": {
+          "properties": {
+            "existingSecret": {
+              "properties": {
+                "secretName": {
+                  "default": "authentik-config",
+                  "title": "secretName",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "secretName"
+              ],
+              "title": "existingSecret",
+              "type": "object"
+            }
+          },
+          "required": [
+            "existingSecret"
+          ],
+          "title": "authentik",
+          "type": "object"
+        },
+        "global": {
+          "properties": {
+            "env": {
+              "items": {
+                "anyOf": [
+                  {
+                    "properties": {
+                      "name": {
+                        "default": "AUTHENTIK_POSTGRESQL__HOST",
+                        "title": "name",
+                        "type": "string"
+                      },
+                      "value": {
+                        "default": "authentik-db-rw",
+                        "title": "value",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "value"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "name": {
+                        "default": "AUTHENTIK_POSTGRESQL__NAME",
+                        "title": "name",
+                        "type": "string"
+                      },
+                      "value": {
+                        "default": "authentik",
+                        "title": "value",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "value"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "name": {
+                        "default": "AUTHENTIK_POSTGRESQL__USER",
+                        "title": "name",
+                        "type": "string"
+                      },
+                      "value": {
+                        "default": "authentik",
+                        "title": "value",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "value"
+                    ],
+                    "type": "object"
+                  }
+                ],
+                "required": []
+              },
+              "title": "env",
+              "type": "array"
+            }
+          },
+          "required": [
+            "env"
+          ],
+          "title": "global",
+          "type": "object"
+        },
+        "server": {
+          "properties": {
+            "containerSecurityContext": {
+              "properties": {
+                "allowPrivilegeEscalation": {
+                  "default": false,
+                  "title": "allowPrivilegeEscalation",
+                  "type": "boolean"
+                },
+                "capabilities": {
+                  "properties": {
+                    "drop": {
+                      "items": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          }
+                        ],
+                        "required": []
+                      },
+                      "title": "drop",
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "drop"
+                  ],
+                  "title": "capabilities",
+                  "type": "object"
+                }
+              },
+              "required": [
+                "allowPrivilegeEscalation",
+                "capabilities"
+              ],
+              "title": "containerSecurityContext",
+              "type": "object"
+            },
+            "resources": {
+              "properties": {
+                "limits": {
+                  "properties": {
+                    "cpu": {
+                      "default": "1",
+                      "title": "cpu",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "1Gi",
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "cpu",
+                    "memory"
+                  ],
+                  "title": "limits",
+                  "type": "object"
+                },
+                "requests": {
+                  "properties": {
+                    "cpu": {
+                      "default": "100m",
+                      "title": "cpu",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "512Mi",
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "cpu",
+                    "memory"
+                  ],
+                  "title": "requests",
+                  "type": "object"
+                }
+              },
+              "required": [
+                "requests",
+                "limits"
+              ],
+              "title": "resources",
+              "type": "object"
+            },
+            "securityContext": {
+              "properties": {
+                "runAsGroup": {
+                  "default": 1000,
+                  "title": "runAsGroup",
+                  "type": "integer"
+                },
+                "runAsNonRoot": {
+                  "default": true,
+                  "title": "runAsNonRoot",
+                  "type": "boolean"
+                },
+                "runAsUser": {
+                  "default": 1000,
+                  "title": "runAsUser",
+                  "type": "integer"
+                },
+                "seccompProfile": {
+                  "properties": {
+                    "type": {
+                      "default": "RuntimeDefault",
+                      "title": "type",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "type"
+                  ],
+                  "title": "seccompProfile",
+                  "type": "object"
+                }
+              },
+              "required": [
+                "runAsNonRoot",
+                "runAsUser",
+                "runAsGroup",
+                "seccompProfile"
+              ],
+              "title": "securityContext",
+              "type": "object"
+            }
+          },
+          "required": [
+            "securityContext",
+            "containerSecurityContext",
+            "resources"
+          ],
+          "title": "server",
+          "type": "object"
+        },
+        "worker": {
+          "properties": {
+            "containerSecurityContext": {
+              "properties": {
+                "allowPrivilegeEscalation": {
+                  "default": false,
+                  "title": "allowPrivilegeEscalation",
+                  "type": "boolean"
+                },
+                "capabilities": {
+                  "properties": {
+                    "drop": {
+                      "items": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          }
+                        ],
+                        "required": []
+                      },
+                      "title": "drop",
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "drop"
+                  ],
+                  "title": "capabilities",
+                  "type": "object"
+                }
+              },
+              "required": [
+                "allowPrivilegeEscalation",
+                "capabilities"
+              ],
+              "title": "containerSecurityContext",
+              "type": "object"
+            },
+            "resources": {
+              "properties": {
+                "limits": {
+                  "properties": {
+                    "cpu": {
+                      "default": "1",
+                      "title": "cpu",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "1Gi",
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "cpu",
+                    "memory"
+                  ],
+                  "title": "limits",
+                  "type": "object"
+                },
+                "requests": {
+                  "properties": {
+                    "cpu": {
+                      "default": "100m",
+                      "title": "cpu",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "512Mi",
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "cpu",
+                    "memory"
+                  ],
+                  "title": "requests",
+                  "type": "object"
+                }
+              },
+              "required": [
+                "requests",
+                "limits"
+              ],
+              "title": "resources",
+              "type": "object"
+            },
+            "securityContext": {
+              "properties": {
+                "runAsGroup": {
+                  "default": 1000,
+                  "title": "runAsGroup",
+                  "type": "integer"
+                },
+                "runAsNonRoot": {
+                  "default": true,
+                  "title": "runAsNonRoot",
+                  "type": "boolean"
+                },
+                "runAsUser": {
+                  "default": 1000,
+                  "title": "runAsUser",
+                  "type": "integer"
+                },
+                "seccompProfile": {
+                  "properties": {
+                    "type": {
+                      "default": "RuntimeDefault",
+                      "title": "type",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "type"
+                  ],
+                  "title": "seccompProfile",
+                  "type": "object"
+                }
+              },
+              "required": [
+                "runAsNonRoot",
+                "runAsUser",
+                "runAsGroup",
+                "seccompProfile"
+              ],
+              "title": "securityContext",
+              "type": "object"
+            }
+          },
+          "required": [
+            "securityContext",
+            "containerSecurityContext",
+            "resources"
+          ],
+          "title": "worker",
+          "type": "object"
+        }
+      },
+      "required": [
+        "authentik",
+        "global",
+        "server",
+        "worker"
+      ],
+      "title": "authentik",
+      "type": "object"
+    },
+    "database": {
+      "properties": {
+        "enabled": {
+          "default": true,
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "image": {
+          "properties": {
+            "digest": {
+              "default": "sha256:dab846a58e8ca3c8872584ab2225ee93fb9e659a87c52e163fefae9275b46f51",
+              "title": "digest",
+              "type": "string"
+            },
+            "repository": {
+              "default": "ghcr.io/cloudnative-pg/postgresql",
+              "title": "repository",
+              "type": "string"
+            },
+            "tag": {
+              "default": "17.7",
+              "title": "tag",
+              "type": "string"
+            }
+          },
+          "required": [
+            "repository",
+            "tag",
+            "digest"
+          ],
+          "title": "image",
+          "type": "object"
+        },
+        "resources": {
+          "properties": {
+            "limits": {
+              "properties": {
+                "cpu": {
+                  "default": "1",
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "1Gi",
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "cpu",
+                "memory"
+              ],
+              "title": "limits",
+              "type": "object"
+            },
+            "requests": {
+              "properties": {
+                "cpu": {
+                  "default": "100m",
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "256Mi",
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "cpu",
+                "memory"
+              ],
+              "title": "requests",
+              "type": "object"
+            }
+          },
+          "required": [
+            "requests",
+            "limits"
+          ],
+          "title": "resources",
+          "type": "object"
+        },
+        "storage": {
+          "properties": {
+            "size": {
+              "default": "8Gi",
+              "title": "size",
+              "type": "string"
+            }
+          },
+          "required": [
+            "size"
+          ],
+          "title": "storage",
+          "type": "object"
+        }
+      },
+      "required": [
+        "enabled",
+        "image",
+        "storage",
+        "resources"
+      ],
+      "title": "database",
+      "type": "object"
+    },
+    "externalSecrets": {
+      "items": {
+        "anyOf": [
+          {
+            "properties": {
+              "data": {
+                "properties": {
+                  "AUTHENTIK_BOOTSTRAP_PASSWORD": {
+                    "default": "bootstrap-password",
+                    "title": "AUTHENTIK_BOOTSTRAP_PASSWORD",
+                    "type": "string"
+                  },
+                  "AUTHENTIK_POSTGRESQL__PASSWORD": {
+                    "default": "db-password",
+                    "title": "AUTHENTIK_POSTGRESQL__PASSWORD",
+                    "type": "string"
+                  },
+                  "AUTHENTIK_SECRET_KEY": {
+                    "default": "secret-key",
+                    "title": "AUTHENTIK_SECRET_KEY",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "AUTHENTIK_SECRET_KEY",
+                  "AUTHENTIK_POSTGRESQL__PASSWORD",
+                  "AUTHENTIK_BOOTSTRAP_PASSWORD"
+                ],
+                "title": "data",
+                "type": "object"
+              },
+              "name": {
+                "default": "authentik-config",
+                "title": "name",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "data"
+            ],
+            "type": "object"
+          }
+        ],
+        "required": []
+      },
+      "title": "externalSecrets",
+      "type": "array"
+    },
+    "global": {
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "httpRoute": {
+      "properties": {
+        "enabled": {
+          "default": true,
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "listener": {
+          "default": "http",
+          "title": "listener",
+          "type": "string"
+        },
+        "path": {
+          "default": "/",
+          "title": "path",
+          "type": "string"
+        },
+        "port": {
+          "default": 80,
+          "title": "port",
+          "type": "integer"
+        },
+        "service": {
+          "default": "authentik-server",
+          "title": "service",
+          "type": "string"
+        }
+      },
+      "required": [
+        "enabled",
+        "listener",
+        "path",
+        "port",
+        "service"
+      ],
+      "title": "httpRoute",
+      "type": "object"
+    },
+    "networkPolicy": {
+      "properties": {
+        "allow": {
+          "items": {
+            "anyOf": [
+              {
+                "type": "string"
+              }
+            ],
+            "required": []
+          },
+          "title": "allow",
+          "type": "array"
+        },
+        "enabled": {
+          "default": true,
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "port": {
+          "default": 9000,
+          "title": "port",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "enabled",
+        "port",
+        "allow"
+      ],
+      "title": "networkPolicy",
+      "type": "object"
+    }
+  },
+  "required": [
+    "database",
+    "httpRoute",
+    "networkPolicy",
+    "externalSecrets",
+    "authentik"
+  ],
+  "type": "object"
+}

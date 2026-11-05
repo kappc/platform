@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "cilium": {
+      "properties": {
+        "bpf": {
+          "properties": {
+            "masquerade": {
+              "default": false,
+              "title": "masquerade",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "masquerade"
+          ],
+          "title": "bpf",
+          "type": "object"
+        },
+        "kubeProxyReplacement": {
+          "default": false,
+          "title": "kubeProxyReplacement",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "bpf",
+        "kubeProxyReplacement"
+      ],
+      "title": "cilium",
+      "type": "object"
+    },
+    "global": {
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    }
+  },
+  "required": [
+    "cilium"
+  ],
+  "type": "object"
+}

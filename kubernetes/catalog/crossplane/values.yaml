@@ -1,6 +1,22 @@
 ---
 crossplane:
   replicas: 1
+  podSecurityContextCrossplane:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  securityContextCrossplane:
+    capabilities:
+      drop:
+        - ALL
+  podSecurityContextRBACManager:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  securityContextRBACManager:
+    capabilities:
+      drop:
+        - ALL
   provider:
     packages: []
   configuration:

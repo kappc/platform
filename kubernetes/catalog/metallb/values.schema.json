@@ -1,0 +1,261 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "addressPool": {
+      "properties": {
+        "addresses": {
+          "items": {
+            "required": []
+          },
+          "title": "addresses",
+          "type": "array"
+        },
+        "enabled": {
+          "default": false,
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "name": {
+          "default": "default",
+          "title": "name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "enabled",
+        "name",
+        "addresses"
+      ],
+      "title": "addressPool",
+      "type": "object"
+    },
+    "global": {
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "l2Advertisement": {
+      "properties": {
+        "enabled": {
+          "default": false,
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "interfaces": {
+          "items": {
+            "required": []
+          },
+          "title": "interfaces",
+          "type": "array"
+        },
+        "name": {
+          "default": "default",
+          "title": "name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "enabled",
+        "name",
+        "interfaces"
+      ],
+      "title": "l2Advertisement",
+      "type": "object"
+    },
+    "metallb": {
+      "properties": {
+        "controller": {
+          "properties": {
+            "replicas": {
+              "default": 1,
+              "title": "replicas",
+              "type": "integer"
+            },
+            "resources": {
+              "properties": {
+                "limits": {
+                  "properties": {
+                    "cpu": {
+                      "default": "250m",
+                      "title": "cpu",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "256Mi",
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "cpu",
+                    "memory"
+                  ],
+                  "title": "limits",
+                  "type": "object"
+                },
+                "requests": {
+                  "properties": {
+                    "cpu": {
+                      "default": "25m",
+                      "title": "cpu",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "64Mi",
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "cpu",
+                    "memory"
+                  ],
+                  "title": "requests",
+                  "type": "object"
+                }
+              },
+              "required": [
+                "requests",
+                "limits"
+              ],
+              "title": "resources",
+              "type": "object"
+            },
+            "securityContext": {
+              "properties": {
+                "seccompProfile": {
+                  "properties": {
+                    "type": {
+                      "default": "RuntimeDefault",
+                      "title": "type",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "type"
+                  ],
+                  "title": "seccompProfile",
+                  "type": "object"
+                }
+              },
+              "required": [
+                "seccompProfile"
+              ],
+              "title": "securityContext",
+              "type": "object"
+            }
+          },
+          "required": [
+            "replicas",
+            "securityContext",
+            "resources"
+          ],
+          "title": "controller",
+          "type": "object"
+        },
+        "frrk8s": {
+          "properties": {
+            "enabled": {
+              "default": false,
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "enabled"
+          ],
+          "title": "frrk8s",
+          "type": "object"
+        },
+        "speaker": {
+          "properties": {
+            "frr": {
+              "properties": {
+                "enabled": {
+                  "default": false,
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "enabled"
+              ],
+              "title": "frr",
+              "type": "object"
+            },
+            "resources": {
+              "properties": {
+                "limits": {
+                  "properties": {
+                    "cpu": {
+                      "default": "250m",
+                      "title": "cpu",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "256Mi",
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "cpu",
+                    "memory"
+                  ],
+                  "title": "limits",
+                  "type": "object"
+                },
+                "requests": {
+                  "properties": {
+                    "cpu": {
+                      "default": "25m",
+                      "title": "cpu",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "64Mi",
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "cpu",
+                    "memory"
+                  ],
+                  "title": "requests",
+                  "type": "object"
+                }
+              },
+              "required": [
+                "requests",
+                "limits"
+              ],
+              "title": "resources",
+              "type": "object"
+            }
+          },
+          "required": [
+            "frr",
+            "resources"
+          ],
+          "title": "speaker",
+          "type": "object"
+        }
+      },
+      "required": [
+        "controller",
+        "speaker",
+        "frrk8s"
+      ],
+      "title": "metallb",
+      "type": "object"
+    }
+  },
+  "required": [
+    "metallb",
+    "addressPool",
+    "l2Advertisement"
+  ],
+  "type": "object"
+}

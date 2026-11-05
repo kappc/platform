@@ -2,6 +2,9 @@
 metallb:
   controller:
     replicas: 1
+    securityContext:
+      seccompProfile:
+        type: RuntimeDefault
     resources:
       requests:
         cpu: 25m

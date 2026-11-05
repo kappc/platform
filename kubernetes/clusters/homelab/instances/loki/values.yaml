@@ -1,0 +1,3 @@
+---
+httpRoute:
+  hostname: loki.homelab.test

@@ -1,4 +1,3 @@
 ---
 httpRoute:
-  enabled: true
   hostname: grafana.homelab.test

@@ -1,0 +1,95 @@
+---
+database:
+  enabled: true
+  image:
+    repository: ghcr.io/cloudnative-pg/postgresql
+    tag: "17.7"
+    digest: sha256:dab846a58e8ca3c8872584ab2225ee93fb9e659a87c52e163fefae9275b46f51
+  storage:
+    size: 8Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+
+httpRoute:
+  enabled: true
+  listener: http
+  path: /
+  service: gitea-http
+  port: 3000
+
+networkPolicy:
+  enabled: true
+  port: 3000
+  allow:
+    - gitea-runner
+
+externalSecrets:
+  - name: gitea-admin
+    data:
+      username: admin-username
+      password: admin-password
+
+gitea:
+  image:
+    fullOverride: docker.gitea.com/gitea:1.27.0-rootless@sha256:414ba5b2b1163480e9ed4213a989cd798579cfa88582a2359303273009b2b852
+  deployment:
+    annotations:
+      reloader.stakater.com/auto: "true"
+  serviceAccount:
+    create: true
+  podSecurityContext:
+    fsGroup: 1000
+    seccompProfile:
+      type: RuntimeDefault
+  containerSecurityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+  initContainers:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 256Mi
+  gitea:
+    admin:
+      existingSecret: gitea-admin
+    config:
+      database:
+        DB_TYPE: postgres
+        HOST: gitea-db-rw:5432
+        NAME: gitea
+        USER: gitea
+      service:
+        DISABLE_REGISTRATION: true
+    additionalConfigFromEnvs:
+      - name: GITEA__DATABASE__PASSWD
+        valueFrom:
+          secretKeyRef:
+            name: gitea-db
+            key: password
+  postgresql-ha:
+    enabled: false
+  valkey-cluster:
+    enabled: false
+  test:
+    enabled: false

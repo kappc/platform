@@ -7,5 +7,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   addresses:
-    {{- required "addressPool.addresses must contain one or more ranges" .Values.addressPool.addresses | toYaml | nindent 4 }}
+    {{- $err := "addressPool.addresses must contain one or more ranges" }}
+    {{- $addresses := required $err .Values.addressPool.addresses }}
+    {{- toYaml $addresses | nindent 4 }}
 {{- end }}

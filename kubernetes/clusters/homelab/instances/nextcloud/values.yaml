@@ -1,10 +1,7 @@
 ---
-database:
-  storage:
-    storageClass: standard
+httpRoute:
+  hostname: nextcloud.homelab.test
 
 nextcloud:
   nextcloud:
     host: nextcloud.homelab.test
-  persistence:
-    storageClass: standard

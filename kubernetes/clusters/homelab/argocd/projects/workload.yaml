@@ -1,0 +1,25 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: workload
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+    argocd.argoproj.io/sync-options: Delete=confirm,Prune=confirm
+spec:
+  description: End-user workloads and tenant services
+  sourceRepos:
+    - https://github.com/kappc/platform.git
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: headscale
+    - server: https://kubernetes.default.svc
+      namespace: nextcloud
+    - server: https://kubernetes.default.svc
+      namespace: outline
+    - server: https://kubernetes.default.svc
+      namespace: whoami
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace

@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "allowRules": {
+      "items": {
+        "required": []
+      },
+      "title": "allowRules",
+      "type": "array"
+    },
+    "excludedNamespaces": {
+      "items": {
+        "anyOf": [
+          {
+            "type": "string"
+          }
+        ],
+        "required": []
+      },
+      "title": "excludedNamespaces",
+      "type": "array"
+    },
+    "global": {
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "sameNamespace": {
+      "items": {
+        "required": []
+      },
+      "title": "sameNamespace",
+      "type": "array"
+    }
+  },
+  "required": [
+    "excludedNamespaces",
+    "sameNamespace",
+    "allowRules"
+  ],
+  "type": "object"
+}

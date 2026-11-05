@@ -1,7 +1,6 @@
 ---
 application: outline
 argocd:
-  name: outline
-  project: platform
+  project: workload
   rolloutGroup: workload
 namespace: outline

@@ -1,7 +1,6 @@
 ---
 application: openbao
 argocd:
-  name: openbao
   project: platform
   rolloutGroup: platform
 namespace: openbao

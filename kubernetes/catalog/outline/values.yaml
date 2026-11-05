@@ -1,5 +1,6 @@
 ---
 database:
+  enabled: true
   image:
     repository: ghcr.io/cloudnative-pg/postgresql
     tag: "17.7"
@@ -14,8 +15,27 @@ database:
       cpu: "1"
       memory: 1Gi
 
+httpRoute:
+  enabled: true
+  listener: http
+  path: /
+  port: 3000
+
+networkPolicy:
+  enabled: true
+  port: 3000
+
+externalSecrets:
+  - name: outline-config
+    data:
+      secret-key: secret-key
+      utils-secret: utils-secret
+      oidc-client-secret: oidc-client-secret
+  - name: outline-redis
+    data:
+      redis-password: redis-password
+
 outline:
-  url: http://outline.homelab.test
   secretKeyExternalSecret:
     name: outline-config
     key: secret-key
@@ -35,6 +55,9 @@ outline:
   redis:
     enabled: true
     architecture: standalone
+    image:
+      tag: 8.2.1-debian-12-r0
+      digest: sha256:25bf63f3caf75af4628c0dfcf39859ad1ac8abe135be85e99699f9637b16dc28
     auth:
       enabled: true
       existingSecret: outline-redis
@@ -42,6 +65,16 @@ outline:
     master:
       persistence:
         enabled: false
+      resources:
+        requests:
+          cpu: 50m
+          memory: 64Mi
+        limits:
+          cpu: 250m
+          memory: 256Mi
+  podSecurityContext:
+    seccompProfile:
+      type: RuntimeDefault
   fileStorage:
     mode: local
     local:
@@ -55,15 +88,15 @@ outline:
       existingSecret:
         name: outline-config
         clientSecretKey: oidc-client-secret
+      tokenUri: http://authentik-server.authentik.svc.cluster.local:80/application/o/token/
+      userInfoUri: http://authentik-server.authentik.svc.cluster.local:80/application/o/userinfo/
+      displayName: Authentik
+      usernameClaim: preferred_username
+      scopes:
+        - openid
+        - profile
+        - email
   web:
     forceHttps: false
   service:
     port: 3000
-
-httpRoute:
-  parentRefs:
-    - group: gateway.networking.k8s.io
-      kind: Gateway
-      name: gateway
-      namespace: envoy-gateway-system
-      sectionName: http

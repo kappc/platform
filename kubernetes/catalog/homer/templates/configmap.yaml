@@ -7,4 +7,4 @@ metadata:
     {{- include "homer.labels" . | nindent 4 }}
 data:
   config.yml: |
-    {{- toYaml .Values.dashboard | nindent 4 }}
+    {{- tpl (toYaml .Values.dashboard) . | nindent 4 }}

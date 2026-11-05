@@ -1,0 +1,6 @@
+---
+apiVersion: v2
+name: cilium-policies
+description: Cilium default-deny ingress and baseline policies
+type: application
+version: 0.1.0

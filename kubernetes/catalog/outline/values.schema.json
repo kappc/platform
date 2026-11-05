@@ -1,0 +1,711 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "database": {
+      "properties": {
+        "enabled": {
+          "default": true,
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "image": {
+          "properties": {
+            "digest": {
+              "default": "sha256:dab846a58e8ca3c8872584ab2225ee93fb9e659a87c52e163fefae9275b46f51",
+              "title": "digest",
+              "type": "string"
+            },
+            "repository": {
+              "default": "ghcr.io/cloudnative-pg/postgresql",
+              "title": "repository",
+              "type": "string"
+            },
+            "tag": {
+              "default": "17.7",
+              "title": "tag",
+              "type": "string"
+            }
+          },
+          "required": [
+            "repository",
+            "tag",
+            "digest"
+          ],
+          "title": "image",
+          "type": "object"
+        },
+        "resources": {
+          "properties": {
+            "limits": {
+              "properties": {
+                "cpu": {
+                  "default": "1",
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "1Gi",
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "cpu",
+                "memory"
+              ],
+              "title": "limits",
+              "type": "object"
+            },
+            "requests": {
+              "properties": {
+                "cpu": {
+                  "default": "100m",
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "256Mi",
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "cpu",
+                "memory"
+              ],
+              "title": "requests",
+              "type": "object"
+            }
+          },
+          "required": [
+            "requests",
+            "limits"
+          ],
+          "title": "resources",
+          "type": "object"
+        },
+        "storage": {
+          "properties": {
+            "size": {
+              "default": "8Gi",
+              "title": "size",
+              "type": "string"
+            }
+          },
+          "required": [
+            "size"
+          ],
+          "title": "storage",
+          "type": "object"
+        }
+      },
+      "required": [
+        "enabled",
+        "image",
+        "storage",
+        "resources"
+      ],
+      "title": "database",
+      "type": "object"
+    },
+    "externalSecrets": {
+      "items": {
+        "anyOf": [
+          {
+            "properties": {
+              "data": {
+                "properties": {
+                  "oidc-client-secret": {
+                    "default": "oidc-client-secret",
+                    "title": "oidc-client-secret",
+                    "type": "string"
+                  },
+                  "secret-key": {
+                    "default": "secret-key",
+                    "title": "secret-key",
+                    "type": "string"
+                  },
+                  "utils-secret": {
+                    "default": "utils-secret",
+                    "title": "utils-secret",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "secret-key",
+                  "utils-secret",
+                  "oidc-client-secret"
+                ],
+                "title": "data",
+                "type": "object"
+              },
+              "name": {
+                "default": "outline-config",
+                "title": "name",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "data"
+            ],
+            "type": "object"
+          },
+          {
+            "properties": {
+              "data": {
+                "properties": {
+                  "redis-password": {
+                    "default": "redis-password",
+                    "title": "redis-password",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "redis-password"
+                ],
+                "title": "data",
+                "type": "object"
+              },
+              "name": {
+                "default": "outline-redis",
+                "title": "name",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "data"
+            ],
+            "type": "object"
+          }
+        ],
+        "required": []
+      },
+      "title": "externalSecrets",
+      "type": "array"
+    },
+    "global": {
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "httpRoute": {
+      "properties": {
+        "enabled": {
+          "default": true,
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "listener": {
+          "default": "http",
+          "title": "listener",
+          "type": "string"
+        },
+        "path": {
+          "default": "/",
+          "title": "path",
+          "type": "string"
+        },
+        "port": {
+          "default": 3000,
+          "title": "port",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "enabled",
+        "listener",
+        "path",
+        "port"
+      ],
+      "title": "httpRoute",
+      "type": "object"
+    },
+    "networkPolicy": {
+      "properties": {
+        "enabled": {
+          "default": true,
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "port": {
+          "default": 3000,
+          "title": "port",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "enabled",
+        "port"
+      ],
+      "title": "networkPolicy",
+      "type": "object"
+    },
+    "outline": {
+      "properties": {
+        "auth": {
+          "properties": {
+            "oidc": {
+              "properties": {
+                "clientId": {
+                  "default": "outline",
+                  "title": "clientId",
+                  "type": "string"
+                },
+                "displayName": {
+                  "default": "Authentik",
+                  "title": "displayName",
+                  "type": "string"
+                },
+                "enabled": {
+                  "default": true,
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "existingSecret": {
+                  "properties": {
+                    "clientSecretKey": {
+                      "default": "oidc-client-secret",
+                      "title": "clientSecretKey",
+                      "type": "string"
+                    },
+                    "name": {
+                      "default": "outline-config",
+                      "title": "name",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "clientSecretKey"
+                  ],
+                  "title": "existingSecret",
+                  "type": "object"
+                },
+                "scopes": {
+                  "items": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "string"
+                      }
+                    ],
+                    "required": []
+                  },
+                  "title": "scopes",
+                  "type": "array"
+                },
+                "tokenUri": {
+                  "default": "http://authentik-server.authentik.svc.cluster.local:80/application/o/token/",
+                  "title": "tokenUri",
+                  "type": "string"
+                },
+                "userInfoUri": {
+                  "default": "http://authentik-server.authentik.svc.cluster.local:80/application/o/userinfo/",
+                  "title": "userInfoUri",
+                  "type": "string"
+                },
+                "usernameClaim": {
+                  "default": "preferred_username",
+                  "title": "usernameClaim",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "enabled",
+                "clientId",
+                "existingSecret",
+                "tokenUri",
+                "userInfoUri",
+                "displayName",
+                "usernameClaim",
+                "scopes"
+              ],
+              "title": "oidc",
+              "type": "object"
+            }
+          },
+          "required": [
+            "oidc"
+          ],
+          "title": "auth",
+          "type": "object"
+        },
+        "externalPostgresql": {
+          "properties": {
+            "database": {
+              "default": "outline",
+              "title": "database",
+              "type": "string"
+            },
+            "existingSecret": {
+              "default": "outline-db",
+              "title": "existingSecret",
+              "type": "string"
+            },
+            "host": {
+              "default": "outline-db-rw",
+              "title": "host",
+              "type": "string"
+            },
+            "passwordSecretKey": {
+              "default": "password",
+              "title": "passwordSecretKey",
+              "type": "string"
+            },
+            "username": {
+              "default": "outline",
+              "title": "username",
+              "type": "string"
+            }
+          },
+          "required": [
+            "host",
+            "username",
+            "existingSecret",
+            "passwordSecretKey",
+            "database"
+          ],
+          "title": "externalPostgresql",
+          "type": "object"
+        },
+        "fileStorage": {
+          "properties": {
+            "local": {
+              "properties": {
+                "persistence": {
+                  "properties": {
+                    "enabled": {
+                      "default": true,
+                      "title": "enabled",
+                      "type": "boolean"
+                    },
+                    "size": {
+                      "default": "8Gi",
+                      "title": "size",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "enabled",
+                    "size"
+                  ],
+                  "title": "persistence",
+                  "type": "object"
+                }
+              },
+              "required": [
+                "persistence"
+              ],
+              "title": "local",
+              "type": "object"
+            },
+            "mode": {
+              "default": "local",
+              "title": "mode",
+              "type": "string"
+            }
+          },
+          "required": [
+            "mode",
+            "local"
+          ],
+          "title": "fileStorage",
+          "type": "object"
+        },
+        "ingress": {
+          "properties": {
+            "enabled": {
+              "default": false,
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "enabled"
+          ],
+          "title": "ingress",
+          "type": "object"
+        },
+        "podSecurityContext": {
+          "properties": {
+            "seccompProfile": {
+              "properties": {
+                "type": {
+                  "default": "RuntimeDefault",
+                  "title": "type",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "type"
+              ],
+              "title": "seccompProfile",
+              "type": "object"
+            }
+          },
+          "required": [
+            "seccompProfile"
+          ],
+          "title": "podSecurityContext",
+          "type": "object"
+        },
+        "postgresql": {
+          "properties": {
+            "enabled": {
+              "default": false,
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "enabled"
+          ],
+          "title": "postgresql",
+          "type": "object"
+        },
+        "redis": {
+          "properties": {
+            "architecture": {
+              "default": "standalone",
+              "title": "architecture",
+              "type": "string"
+            },
+            "auth": {
+              "properties": {
+                "enabled": {
+                  "default": true,
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "existingSecret": {
+                  "default": "outline-redis",
+                  "title": "existingSecret",
+                  "type": "string"
+                },
+                "existingSecretPasswordKey": {
+                  "default": "redis-password",
+                  "title": "existingSecretPasswordKey",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "enabled",
+                "existingSecret",
+                "existingSecretPasswordKey"
+              ],
+              "title": "auth",
+              "type": "object"
+            },
+            "enabled": {
+              "default": true,
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "image": {
+              "properties": {
+                "digest": {
+                  "default": "sha256:25bf63f3caf75af4628c0dfcf39859ad1ac8abe135be85e99699f9637b16dc28",
+                  "title": "digest",
+                  "type": "string"
+                },
+                "tag": {
+                  "default": "8.2.1-debian-12-r0",
+                  "title": "tag",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "tag",
+                "digest"
+              ],
+              "title": "image",
+              "type": "object"
+            },
+            "master": {
+              "properties": {
+                "persistence": {
+                  "properties": {
+                    "enabled": {
+                      "default": false,
+                      "title": "enabled",
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "enabled"
+                  ],
+                  "title": "persistence",
+                  "type": "object"
+                },
+                "resources": {
+                  "properties": {
+                    "limits": {
+                      "properties": {
+                        "cpu": {
+                          "default": "250m",
+                          "title": "cpu",
+                          "type": "string"
+                        },
+                        "memory": {
+                          "default": "256Mi",
+                          "title": "memory",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "cpu",
+                        "memory"
+                      ],
+                      "title": "limits",
+                      "type": "object"
+                    },
+                    "requests": {
+                      "properties": {
+                        "cpu": {
+                          "default": "50m",
+                          "title": "cpu",
+                          "type": "string"
+                        },
+                        "memory": {
+                          "default": "64Mi",
+                          "title": "memory",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "cpu",
+                        "memory"
+                      ],
+                      "title": "requests",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "requests",
+                    "limits"
+                  ],
+                  "title": "resources",
+                  "type": "object"
+                }
+              },
+              "required": [
+                "persistence",
+                "resources"
+              ],
+              "title": "master",
+              "type": "object"
+            }
+          },
+          "required": [
+            "enabled",
+            "architecture",
+            "image",
+            "auth",
+            "master"
+          ],
+          "title": "redis",
+          "type": "object"
+        },
+        "secretKeyExternalSecret": {
+          "properties": {
+            "key": {
+              "default": "secret-key",
+              "title": "key",
+              "type": "string"
+            },
+            "name": {
+              "default": "outline-config",
+              "title": "name",
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "key"
+          ],
+          "title": "secretKeyExternalSecret",
+          "type": "object"
+        },
+        "service": {
+          "properties": {
+            "port": {
+              "default": 3000,
+              "title": "port",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "port"
+          ],
+          "title": "service",
+          "type": "object"
+        },
+        "utilsSecretExternalSecret": {
+          "properties": {
+            "key": {
+              "default": "utils-secret",
+              "title": "key",
+              "type": "string"
+            },
+            "name": {
+              "default": "outline-config",
+              "title": "name",
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "key"
+          ],
+          "title": "utilsSecretExternalSecret",
+          "type": "object"
+        },
+        "web": {
+          "properties": {
+            "forceHttps": {
+              "default": false,
+              "title": "forceHttps",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "forceHttps"
+          ],
+          "title": "web",
+          "type": "object"
+        }
+      },
+      "required": [
+        "secretKeyExternalSecret",
+        "utilsSecretExternalSecret",
+        "ingress",
+        "postgresql",
+        "externalPostgresql",
+        "redis",
+        "podSecurityContext",
+        "fileStorage",
+        "auth",
+        "web",
+        "service"
+      ],
+      "title": "outline",
+      "type": "object"
+    }
+  },
+  "required": [
+    "database",
+    "httpRoute",
+    "networkPolicy",
+    "externalSecrets",
+    "outline"
+  ],
+  "type": "object"
+}

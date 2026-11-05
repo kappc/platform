@@ -1,0 +1,188 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "dashboard": {
+      "properties": {
+        "footer": {
+          "default": false,
+          "title": "footer",
+          "type": "boolean"
+        },
+        "header": {
+          "default": true,
+          "title": "header",
+          "type": "boolean"
+        },
+        "theme": {
+          "default": "default",
+          "title": "theme",
+          "type": "string"
+        }
+      },
+      "required": [
+        "header",
+        "footer",
+        "theme"
+      ],
+      "title": "dashboard",
+      "type": "object"
+    },
+    "deployment": {
+      "properties": {
+        "replicas": {
+          "default": 1,
+          "title": "replicas",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "replicas"
+      ],
+      "title": "deployment",
+      "type": "object"
+    },
+    "global": {
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "httpRoute": {
+      "properties": {
+        "enabled": {
+          "default": true,
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "listener": {
+          "default": "http",
+          "title": "listener",
+          "type": "string"
+        },
+        "path": {
+          "default": "/",
+          "title": "path",
+          "type": "string"
+        },
+        "port": {
+          "default": 80,
+          "title": "port",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "enabled",
+        "listener",
+        "path",
+        "port"
+      ],
+      "title": "httpRoute",
+      "type": "object"
+    },
+    "image": {
+      "properties": {
+        "digest": {
+          "default": "sha256:febc8967c9f7648ec37633ef3ae1ec90dbe8b7c46fecab80299f08f05be7ecb6",
+          "title": "digest",
+          "type": "string"
+        },
+        "repository": {
+          "default": "b4bz/homer",
+          "title": "repository",
+          "type": "string"
+        },
+        "tag": {
+          "default": "v26.08.3",
+          "title": "tag",
+          "type": "string"
+        }
+      },
+      "required": [
+        "repository",
+        "tag",
+        "digest"
+      ],
+      "title": "image",
+      "type": "object"
+    },
+    "networkPolicy": {
+      "properties": {
+        "enabled": {
+          "default": true,
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "port": {
+          "default": 8080,
+          "title": "port",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "enabled",
+        "port"
+      ],
+      "title": "networkPolicy",
+      "type": "object"
+    },
+    "resources": {
+      "properties": {
+        "limits": {
+          "properties": {
+            "cpu": {
+              "default": "100m",
+              "title": "cpu",
+              "type": "string"
+            },
+            "memory": {
+              "default": "128Mi",
+              "title": "memory",
+              "type": "string"
+            }
+          },
+          "required": [
+            "cpu",
+            "memory"
+          ],
+          "title": "limits",
+          "type": "object"
+        },
+        "requests": {
+          "properties": {
+            "cpu": {
+              "default": "10m",
+              "title": "cpu",
+              "type": "string"
+            },
+            "memory": {
+              "default": "32Mi",
+              "title": "memory",
+              "type": "string"
+            }
+          },
+          "required": [
+            "cpu",
+            "memory"
+          ],
+          "title": "requests",
+          "type": "object"
+        }
+      },
+      "required": [
+        "requests",
+        "limits"
+      ],
+      "title": "resources",
+      "type": "object"
+    }
+  },
+  "required": [
+    "deployment",
+    "image",
+    "httpRoute",
+    "networkPolicy",
+    "dashboard",
+    "resources"
+  ],
+  "type": "object"
+}

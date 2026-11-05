@@ -6,8 +6,9 @@ metadata:
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "-1"
+    argocd.argoproj.io/sync-options: Delete=confirm,Prune=confirm
 spec:
-  description: Argo CD control plane
+  description: GitOps control plane and bootstrap applications
   sourceRepos:
     - https://github.com/kappc/platform.git
   destinations:

@@ -1,0 +1,10 @@
+---
+apiVersion: v2
+name: sonarqube
+description: SonarQube code quality and security analysis
+type: application
+version: 0.1.0
+dependencies:
+  - name: sonarqube
+    version: 2026.5.1003
+    repository: https://SonarSource.github.io/helm-chart-sonarqube

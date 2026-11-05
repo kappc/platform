@@ -1,5 +1,6 @@
 ---
 database:
+  enabled: true
   image:
     repository: ghcr.io/cloudnative-pg/postgresql
     tag: "17.7"
@@ -15,18 +16,29 @@ database:
       memory: 1Gi
 
 httpRoute:
-  parentRefs:
-    - group: gateway.networking.k8s.io
-      kind: Gateway
-      name: gateway
-      namespace: envoy-gateway-system
-      sectionName: http
+  enabled: true
+  listener: http
+  path: /
+  port: 8080
+
+networkPolicy:
+  enabled: true
+  port: 80
+
+externalSecrets:
+  - name: nextcloud-admin
+    data:
+      nextcloud-username: admin-username
+      nextcloud-password: admin-password
 
 nextcloud:
   nextcloud:
     existingSecret:
       enabled: true
       secretName: nextcloud-admin
+    podSecurityContext:
+      seccompProfile:
+        type: RuntimeDefault
   externalDatabase:
     enabled: true
     type: postgresql
@@ -49,6 +61,12 @@ nextcloud:
         runAsUser: 33
         runAsGroup: 33
         runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        seccompProfile:
+          type: RuntimeDefault
       resources:
         requests:
           cpu: 50m

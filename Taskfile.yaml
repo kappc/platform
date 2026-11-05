@@ -1,0 +1,58 @@
+---
+# https://taskfile.dev
+
+version: "3"
+
+vars:
+  VENV_DIR: .venv
+
+tasks:
+  default:
+    desc: Run default tasks
+    cmds:
+      - task: pre-commit:run
+
+  init:
+    desc: Initialize project
+    cmds:
+      - task: venv:init
+      - task: pre-commit:install
+
+  pre-commit:install:
+    desc: Install pre-commit hooks
+    cmds:
+      - cmd: "{{.VENV_DIR}}/bin/pre-commit install"
+    requires:
+      vars:
+        - VENV_DIR
+
+  pre-commit:run:
+    desc: Run pre-commit hooks
+    cmds:
+      - cmd: "{{.VENV_DIR}}/bin/pre-commit run --all-files"
+    requires:
+      vars:
+        - VENV_DIR
+
+  venv:create:
+    desc: Create Python virtual environment
+    cmds:
+      - cmd: test -d {{.VENV_DIR}} || python3 -m venv {{.VENV_DIR}}
+    requires:
+      vars:
+        - VENV_DIR
+
+  venv:init:
+    desc: Initialize Python virtual environment
+    cmds:
+      - task: venv:create
+      - task: venv:install
+
+  venv:install:
+    desc: Install Python packages into virtual environment
+    cmds:
+      - cmd: "{{.VENV_DIR}}/bin/python -m pip install --upgrade pip"
+      - cmd: "{{.VENV_DIR}}/bin/python -m pip install --requirement requirements-dev.txt"
+    requires:
+      vars:
+        - VENV_DIR

@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "customPolicies": {
+      "properties": {
+        "validationFailureAction": {
+          "default": "Audit",
+          "title": "validationFailureAction",
+          "type": "string"
+        }
+      },
+      "required": [
+        "validationFailureAction"
+      ],
+      "title": "customPolicies",
+      "type": "object"
+    },
+    "global": {
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "kyverno-policies": {
+      "properties": {
+        "podSecurityStandard": {
+          "default": "restricted",
+          "title": "podSecurityStandard",
+          "type": "string"
+        },
+        "validationFailureAction": {
+          "default": "Audit",
+          "title": "validationFailureAction",
+          "type": "string"
+        }
+      },
+      "required": [
+        "podSecurityStandard",
+        "validationFailureAction"
+      ],
+      "title": "kyverno-policies",
+      "type": "object"
+    }
+  },
+  "required": [
+    "kyverno-policies",
+    "customPolicies"
+  ],
+  "type": "object"
+}

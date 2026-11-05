@@ -1,0 +1,6 @@
+---
+application: cilium-policies
+argocd:
+  project: infrastructure
+  rolloutGroup: infrastructure
+namespace: kube-system

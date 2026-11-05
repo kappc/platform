@@ -1,4 +1,21 @@
 ---
+httpRoute:
+  enabled: true
+  listener: http
+  path: /
+  port: 80
+  service: kube-prometheus-stack-grafana
+
+networkPolicy:
+  enabled: false
+
+externalSecrets:
+  - name: grafana-admin
+    remoteKey: monitoring
+    data:
+      admin-user: grafana-admin-username
+      admin-password: grafana-admin-password
+
 kube-prometheus-stack:
   grafana:
     admin:
@@ -20,12 +37,3 @@ kube-prometheus-stack:
             resources:
               requests:
                 storage: 8Gi
-
-httpRoute:
-  enabled: false
-  parentRefs:
-    - group: gateway.networking.k8s.io
-      kind: Gateway
-      name: gateway
-      namespace: envoy-gateway-system
-      sectionName: http

@@ -6,17 +6,21 @@ image:
   repository: b4bz/homer
   tag: v26.08.3
   digest: sha256:febc8967c9f7648ec37633ef3ae1ec90dbe8b7c46fecab80299f08f05be7ecb6
-  pullPolicy: IfNotPresent
 
 httpRoute:
   enabled: true
-  parentRefs:
-    - group: gateway.networking.k8s.io
-      kind: Gateway
-      name: gateway
-      namespace: envoy-gateway-system
-      sectionName: http
+  listener: http
   path: /
+  port: 80
+
+networkPolicy:
+  enabled: true
+  port: 8080
+
+dashboard:
+  header: true
+  footer: false
+  theme: default
 
 resources:
   requests:

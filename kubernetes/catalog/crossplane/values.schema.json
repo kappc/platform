@@ -1,0 +1,202 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "crossplane": {
+      "properties": {
+        "configuration": {
+          "properties": {
+            "packages": {
+              "items": {
+                "required": []
+              },
+              "title": "packages",
+              "type": "array"
+            }
+          },
+          "required": [
+            "packages"
+          ],
+          "title": "configuration",
+          "type": "object"
+        },
+        "function": {
+          "properties": {
+            "packages": {
+              "items": {
+                "required": []
+              },
+              "title": "packages",
+              "type": "array"
+            }
+          },
+          "required": [
+            "packages"
+          ],
+          "title": "function",
+          "type": "object"
+        },
+        "podSecurityContextCrossplane": {
+          "properties": {
+            "runAsNonRoot": {
+              "default": true,
+              "title": "runAsNonRoot",
+              "type": "boolean"
+            },
+            "seccompProfile": {
+              "properties": {
+                "type": {
+                  "default": "RuntimeDefault",
+                  "title": "type",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "type"
+              ],
+              "title": "seccompProfile",
+              "type": "object"
+            }
+          },
+          "required": [
+            "runAsNonRoot",
+            "seccompProfile"
+          ],
+          "title": "podSecurityContextCrossplane",
+          "type": "object"
+        },
+        "podSecurityContextRBACManager": {
+          "properties": {
+            "runAsNonRoot": {
+              "default": true,
+              "title": "runAsNonRoot",
+              "type": "boolean"
+            },
+            "seccompProfile": {
+              "properties": {
+                "type": {
+                  "default": "RuntimeDefault",
+                  "title": "type",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "type"
+              ],
+              "title": "seccompProfile",
+              "type": "object"
+            }
+          },
+          "required": [
+            "runAsNonRoot",
+            "seccompProfile"
+          ],
+          "title": "podSecurityContextRBACManager",
+          "type": "object"
+        },
+        "provider": {
+          "properties": {
+            "packages": {
+              "items": {
+                "required": []
+              },
+              "title": "packages",
+              "type": "array"
+            }
+          },
+          "required": [
+            "packages"
+          ],
+          "title": "provider",
+          "type": "object"
+        },
+        "replicas": {
+          "default": 1,
+          "title": "replicas",
+          "type": "integer"
+        },
+        "securityContextCrossplane": {
+          "properties": {
+            "capabilities": {
+              "properties": {
+                "drop": {
+                  "items": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      }
+                    ],
+                    "required": []
+                  },
+                  "title": "drop",
+                  "type": "array"
+                }
+              },
+              "required": [
+                "drop"
+              ],
+              "title": "capabilities",
+              "type": "object"
+            }
+          },
+          "required": [
+            "capabilities"
+          ],
+          "title": "securityContextCrossplane",
+          "type": "object"
+        },
+        "securityContextRBACManager": {
+          "properties": {
+            "capabilities": {
+              "properties": {
+                "drop": {
+                  "items": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      }
+                    ],
+                    "required": []
+                  },
+                  "title": "drop",
+                  "type": "array"
+                }
+              },
+              "required": [
+                "drop"
+              ],
+              "title": "capabilities",
+              "type": "object"
+            }
+          },
+          "required": [
+            "capabilities"
+          ],
+          "title": "securityContextRBACManager",
+          "type": "object"
+        }
+      },
+      "required": [
+        "replicas",
+        "podSecurityContextCrossplane",
+        "securityContextCrossplane",
+        "podSecurityContextRBACManager",
+        "securityContextRBACManager",
+        "provider",
+        "configuration",
+        "function"
+      ],
+      "title": "crossplane",
+      "type": "object"
+    },
+    "global": {
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    }
+  },
+  "required": [
+    "crossplane"
+  ],
+  "type": "object"
+}

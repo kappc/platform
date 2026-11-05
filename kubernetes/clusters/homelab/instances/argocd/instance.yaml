@@ -1,7 +1,6 @@
 ---
 application: argocd
 argocd:
-  name: argocd
   project: argocd
   rolloutGroup: infrastructure
 namespace: argocd

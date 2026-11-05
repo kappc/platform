@@ -1,0 +1,602 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "database": {
+      "properties": {
+        "enabled": {
+          "default": true,
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "image": {
+          "properties": {
+            "digest": {
+              "default": "sha256:dab846a58e8ca3c8872584ab2225ee93fb9e659a87c52e163fefae9275b46f51",
+              "title": "digest",
+              "type": "string"
+            },
+            "repository": {
+              "default": "ghcr.io/cloudnative-pg/postgresql",
+              "title": "repository",
+              "type": "string"
+            },
+            "tag": {
+              "default": "17.7",
+              "title": "tag",
+              "type": "string"
+            }
+          },
+          "required": [
+            "repository",
+            "tag",
+            "digest"
+          ],
+          "title": "image",
+          "type": "object"
+        },
+        "resources": {
+          "properties": {
+            "limits": {
+              "properties": {
+                "cpu": {
+                  "default": "1",
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "1Gi",
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "cpu",
+                "memory"
+              ],
+              "title": "limits",
+              "type": "object"
+            },
+            "requests": {
+              "properties": {
+                "cpu": {
+                  "default": "100m",
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "256Mi",
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "cpu",
+                "memory"
+              ],
+              "title": "requests",
+              "type": "object"
+            }
+          },
+          "required": [
+            "requests",
+            "limits"
+          ],
+          "title": "resources",
+          "type": "object"
+        },
+        "storage": {
+          "properties": {
+            "size": {
+              "default": "8Gi",
+              "title": "size",
+              "type": "string"
+            }
+          },
+          "required": [
+            "size"
+          ],
+          "title": "storage",
+          "type": "object"
+        }
+      },
+      "required": [
+        "enabled",
+        "image",
+        "storage",
+        "resources"
+      ],
+      "title": "database",
+      "type": "object"
+    },
+    "externalSecrets": {
+      "items": {
+        "anyOf": [
+          {
+            "properties": {
+              "data": {
+                "properties": {
+                  "nextcloud-password": {
+                    "default": "admin-password",
+                    "title": "nextcloud-password",
+                    "type": "string"
+                  },
+                  "nextcloud-username": {
+                    "default": "admin-username",
+                    "title": "nextcloud-username",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "nextcloud-username",
+                  "nextcloud-password"
+                ],
+                "title": "data",
+                "type": "object"
+              },
+              "name": {
+                "default": "nextcloud-admin",
+                "title": "name",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "data"
+            ],
+            "type": "object"
+          }
+        ],
+        "required": []
+      },
+      "title": "externalSecrets",
+      "type": "array"
+    },
+    "global": {
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "httpRoute": {
+      "properties": {
+        "enabled": {
+          "default": true,
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "listener": {
+          "default": "http",
+          "title": "listener",
+          "type": "string"
+        },
+        "path": {
+          "default": "/",
+          "title": "path",
+          "type": "string"
+        },
+        "port": {
+          "default": 8080,
+          "title": "port",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "enabled",
+        "listener",
+        "path",
+        "port"
+      ],
+      "title": "httpRoute",
+      "type": "object"
+    },
+    "networkPolicy": {
+      "properties": {
+        "enabled": {
+          "default": true,
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "port": {
+          "default": 80,
+          "title": "port",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "enabled",
+        "port"
+      ],
+      "title": "networkPolicy",
+      "type": "object"
+    },
+    "nextcloud": {
+      "properties": {
+        "cronjob": {
+          "properties": {
+            "cronjob": {
+              "properties": {
+                "resources": {
+                  "properties": {
+                    "limits": {
+                      "properties": {
+                        "cpu": {
+                          "default": "250m",
+                          "title": "cpu",
+                          "type": "string"
+                        },
+                        "memory": {
+                          "default": "256Mi",
+                          "title": "memory",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "cpu",
+                        "memory"
+                      ],
+                      "title": "limits",
+                      "type": "object"
+                    },
+                    "requests": {
+                      "properties": {
+                        "cpu": {
+                          "default": "50m",
+                          "title": "cpu",
+                          "type": "string"
+                        },
+                        "memory": {
+                          "default": "128Mi",
+                          "title": "memory",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "cpu",
+                        "memory"
+                      ],
+                      "title": "requests",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "requests",
+                    "limits"
+                  ],
+                  "title": "resources",
+                  "type": "object"
+                },
+                "securityContext": {
+                  "properties": {
+                    "allowPrivilegeEscalation": {
+                      "default": false,
+                      "title": "allowPrivilegeEscalation",
+                      "type": "boolean"
+                    },
+                    "capabilities": {
+                      "properties": {
+                        "drop": {
+                          "items": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              }
+                            ],
+                            "required": []
+                          },
+                          "title": "drop",
+                          "type": "array"
+                        }
+                      },
+                      "required": [
+                        "drop"
+                      ],
+                      "title": "capabilities",
+                      "type": "object"
+                    },
+                    "runAsGroup": {
+                      "default": 33,
+                      "title": "runAsGroup",
+                      "type": "integer"
+                    },
+                    "runAsNonRoot": {
+                      "default": true,
+                      "title": "runAsNonRoot",
+                      "type": "boolean"
+                    },
+                    "runAsUser": {
+                      "default": 33,
+                      "title": "runAsUser",
+                      "type": "integer"
+                    },
+                    "seccompProfile": {
+                      "properties": {
+                        "type": {
+                          "default": "RuntimeDefault",
+                          "title": "type",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type"
+                      ],
+                      "title": "seccompProfile",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "runAsUser",
+                    "runAsGroup",
+                    "runAsNonRoot",
+                    "allowPrivilegeEscalation",
+                    "capabilities",
+                    "seccompProfile"
+                  ],
+                  "title": "securityContext",
+                  "type": "object"
+                }
+              },
+              "required": [
+                "securityContext",
+                "resources"
+              ],
+              "title": "cronjob",
+              "type": "object"
+            },
+            "enabled": {
+              "default": true,
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "type": {
+              "default": "cronjob",
+              "title": "type",
+              "type": "string"
+            }
+          },
+          "required": [
+            "enabled",
+            "type",
+            "cronjob"
+          ],
+          "title": "cronjob",
+          "type": "object"
+        },
+        "externalDatabase": {
+          "properties": {
+            "enabled": {
+              "default": true,
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "existingSecret": {
+              "properties": {
+                "enabled": {
+                  "default": true,
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "passwordKey": {
+                  "default": "password",
+                  "title": "passwordKey",
+                  "type": "string"
+                },
+                "secretName": {
+                  "default": "nextcloud-db",
+                  "title": "secretName",
+                  "type": "string"
+                },
+                "usernameKey": {
+                  "default": "username",
+                  "title": "usernameKey",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "enabled",
+                "secretName",
+                "usernameKey",
+                "passwordKey"
+              ],
+              "title": "existingSecret",
+              "type": "object"
+            },
+            "host": {
+              "default": "nextcloud-db-rw",
+              "title": "host",
+              "type": "string"
+            },
+            "type": {
+              "default": "postgresql",
+              "title": "type",
+              "type": "string"
+            }
+          },
+          "required": [
+            "enabled",
+            "type",
+            "host",
+            "existingSecret"
+          ],
+          "title": "externalDatabase",
+          "type": "object"
+        },
+        "internalDatabase": {
+          "properties": {
+            "enabled": {
+              "default": false,
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "enabled"
+          ],
+          "title": "internalDatabase",
+          "type": "object"
+        },
+        "nextcloud": {
+          "properties": {
+            "existingSecret": {
+              "properties": {
+                "enabled": {
+                  "default": true,
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "secretName": {
+                  "default": "nextcloud-admin",
+                  "title": "secretName",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "enabled",
+                "secretName"
+              ],
+              "title": "existingSecret",
+              "type": "object"
+            },
+            "podSecurityContext": {
+              "properties": {
+                "seccompProfile": {
+                  "properties": {
+                    "type": {
+                      "default": "RuntimeDefault",
+                      "title": "type",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "type"
+                  ],
+                  "title": "seccompProfile",
+                  "type": "object"
+                }
+              },
+              "required": [
+                "seccompProfile"
+              ],
+              "title": "podSecurityContext",
+              "type": "object"
+            }
+          },
+          "required": [
+            "existingSecret",
+            "podSecurityContext"
+          ],
+          "title": "nextcloud",
+          "type": "object"
+        },
+        "persistence": {
+          "properties": {
+            "enabled": {
+              "default": true,
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "size": {
+              "default": "20Gi",
+              "title": "size",
+              "type": "string"
+            }
+          },
+          "required": [
+            "enabled",
+            "size"
+          ],
+          "title": "persistence",
+          "type": "object"
+        },
+        "resources": {
+          "properties": {
+            "limits": {
+              "properties": {
+                "cpu": {
+                  "default": "1",
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "1Gi",
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "cpu",
+                "memory"
+              ],
+              "title": "limits",
+              "type": "object"
+            },
+            "requests": {
+              "properties": {
+                "cpu": {
+                  "default": "100m",
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "256Mi",
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "cpu",
+                "memory"
+              ],
+              "title": "requests",
+              "type": "object"
+            }
+          },
+          "required": [
+            "requests",
+            "limits"
+          ],
+          "title": "resources",
+          "type": "object"
+        },
+        "startupProbe": {
+          "properties": {
+            "enabled": {
+              "default": true,
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "failureThreshold": {
+              "default": 60,
+              "title": "failureThreshold",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "enabled",
+            "failureThreshold"
+          ],
+          "title": "startupProbe",
+          "type": "object"
+        }
+      },
+      "required": [
+        "nextcloud",
+        "externalDatabase",
+        "internalDatabase",
+        "persistence",
+        "cronjob",
+        "resources",
+        "startupProbe"
+      ],
+      "title": "nextcloud",
+      "type": "object"
+    }
+  },
+  "required": [
+    "database",
+    "httpRoute",
+    "networkPolicy",
+    "externalSecrets",
+    "nextcloud"
+  ],
+  "type": "object"
+}

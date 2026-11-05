@@ -2,4 +2,9 @@
 reloader:
   reloader:
     namespaces:
+      - authentik
+      - headscale
       - homer
+      - monitoring
+      - nextcloud
+      - outline

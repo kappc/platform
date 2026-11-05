@@ -5,7 +5,7 @@ openbao:
   injector:
     enabled: false
   server:
-    affinity: null
+    affinity: ""
     dataStorage:
       size: 5Gi
     ha:
@@ -57,5 +57,5 @@ openbao:
   ui:
     enabled: true
 secretStore:
-  enabled: false
+  enabled: true
   allowedNamespaces: []

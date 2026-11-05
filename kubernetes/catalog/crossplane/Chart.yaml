@@ -3,7 +3,7 @@ apiVersion: v2
 name: crossplane
 description: Crossplane core control plane
 type: application
-version: 0.1.0
+version: 0.1.1
 dependencies:
   - name: crossplane
     version: 2.4.3

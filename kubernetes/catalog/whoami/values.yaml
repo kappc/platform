@@ -6,17 +6,16 @@ image:
   repository: traefik/whoami
   tag: v1.12.0
   digest: sha256:c4717a8d1f0134a7444e24f881160e033991f23027c6c5a9a3f8fd22e70d1d44
-  pullPolicy: IfNotPresent
 
 httpRoute:
   enabled: true
-  parentRefs:
-    - group: gateway.networking.k8s.io
-      kind: Gateway
-      name: gateway
-      namespace: envoy-gateway-system
-      sectionName: http
+  listener: http
   path: /
+  port: 80
+
+networkPolicy:
+  enabled: true
+  port: 80
 
 resources:
   requests:
