@@ -1,9 +1,0 @@
----
-httpRoute:
-  hostname: outline.homelab.test
-
-outline:
-  url: http://outline.homelab.test
-  auth:
-    oidc:
-      authUri: http://authentik.homelab.test/application/o/authorize/

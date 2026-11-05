@@ -1,6 +1,0 @@
----
-application: loki
-argocd:
-  project: platform
-  rolloutGroup: platform
-namespace: monitoring
