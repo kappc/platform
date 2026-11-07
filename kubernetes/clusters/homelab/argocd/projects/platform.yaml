@@ -19,9 +19,6 @@ spec:
     - server: https://kubernetes.default.svc
       namespace: crossplane-system
     - server: https://kubernetes.default.svc
-      # Reloader creates namespaced Roles and RoleBindings in watched workloads.
-      namespace: headscale
-    - server: https://kubernetes.default.svc
       namespace: homer
     - server: https://kubernetes.default.svc
       # kube-prometheus-stack creates Service objects for control-plane targets.
@@ -29,13 +26,7 @@ spec:
     - server: https://kubernetes.default.svc
       namespace: monitoring
     - server: https://kubernetes.default.svc
-      # Reloader creates namespaced Roles and RoleBindings in watched workloads.
-      namespace: nextcloud
-    - server: https://kubernetes.default.svc
       namespace: openbao
-    - server: https://kubernetes.default.svc
-      # Reloader creates namespaced Roles and RoleBindings in watched workloads.
-      namespace: outline
     - server: https://kubernetes.default.svc
       namespace: policy-reporter
     - server: https://kubernetes.default.svc

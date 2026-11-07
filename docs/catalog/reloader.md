@@ -15,10 +15,11 @@ The `reloader` catalog chart deploys Stakater Reloader, an automated Kubernetes 
 
 The chart vendors the upstream Stakater Reloader Helm chart:
 
-- **Scoped Watching**: `watchGlobally: false` limits Reloader to the configured namespaces.
+- **Global Watching**: `watchGlobally: true` lets Reloader watch ConfigMaps and Secrets across namespaces, including namespaces created after Reloader is installed.
 - **Opt-In Reloads**: Workloads opt in with annotations such as `configmap.reloader.stakater.com/reload` or `reloader.stakater.com/auto: "true"`.
 - **Secret Rotation**: Restarts workloads when External Secrets updates a synced `Secret`.
 - **Container Hardening**: No privilege escalation, a read-only root filesystem, and all capabilities dropped.
+- **Cluster-Wide Permissions**: Global watching requires a `ClusterRole` and `ClusterRoleBinding` with access across namespaces.
 
 ## Dependencies
 
@@ -30,9 +31,9 @@ Complete schema definitions, property types, and defaults are defined in [values
 
 Key configuration parameters:
 
-- `reloader.reloader.watchGlobally`: Keep `false` to restrict monitoring to explicit namespaces.
-- `reloader.reloader.namespaces`: Set in instance values to the namespaces whose workloads should be restarted.
+- `reloader.reloader.watchGlobally`: Enabled so newly created namespaces are watched without pre-creating them or updating Reloader values.
+- `reloader.reloader.namespaceSelector`: Optional namespace label selector when global RBAC is acceptable but watching should be limited to selected namespaces.
 
 ## Setup
 
-Add an instance descriptor as described in [Instance Descriptors](../clusters/README.md#instance-descriptors). Recommended rollout group: `platform`. Add the namespace of every workload that opts in to the `namespaces` list.
+Add an instance descriptor as described in [Instance Descriptors](../clusters/README.md#instance-descriptors). Recommended rollout group: `platform`. Global watching needs no namespace list or namespace labels; workloads still opt in through Reloader annotations. The upstream chart grants cluster-wide RBAC, so use scoped watching instead on clusters with untrusted tenants.

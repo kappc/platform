@@ -21,4 +21,4 @@ Stakater Reloader for restarting workloads when configuration changes
 | reloader.reloader.deployment.resources.limits.memory                           | string | `"256Mi"` |             |
 | reloader.reloader.deployment.resources.requests.cpu                            | string | `"50m"`   |             |
 | reloader.reloader.deployment.resources.requests.memory                         | string | `"64Mi"`  |             |
-| reloader.reloader.watchGlobally                                                | bool   | `false`   |             |
+| reloader.reloader.watchGlobally                                                | bool   | `true`    |             |

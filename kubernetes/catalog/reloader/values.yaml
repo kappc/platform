@@ -1,7 +1,7 @@
 ---
 reloader:
   reloader:
-    watchGlobally: false
+    watchGlobally: true
     deployment:
       containerSecurityContext:
         allowPrivilegeEscalation: false
