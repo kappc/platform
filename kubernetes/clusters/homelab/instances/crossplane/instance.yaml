@@ -1,6 +1,0 @@
----
-application: crossplane
-argocd:
-  project: platform
-  rolloutGroup: platform
-namespace: crossplane-system
